@@ -1,0 +1,209 @@
+<!doctype html>
+<!--
+  ==========================================================================
+  个人主页 · 首页
+  风格参考：词元枢阁 Token Nexus
+  --------------------------------------------------------------------------
+  【个人信息替换清单】打开本文件搜索「TODO:」即可找到所有占位处：
+    1. 页面标题与站名（<title>、.brand-cn）
+    2. Hero 标题中的「你的名字」
+    3. 副标题中的职业描述（.hero .sub）
+    4. 能力板块的文字与代码块内容
+    5. 项目卡片的数据（在 js/main.js 的 PROJECTS 数组里维护）
+    6. 页脚版权
+  ==========================================================================
+-->
+<html lang="zh-CN" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>你的名字 · 个人主页</title> <!-- TODO: 替换为你的名字 -->
+  <meta name="description" content="个人主页 —— 全栈开发者，用热爱构建数字产品。" />
+  <meta name="theme-color" content="#faf9f5" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%233ec6e0'/%3E%3Cstop offset='0.5' stop-color='%236e5be8'/%3E%3Cstop offset='1' stop-color='%23c86ef0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='46' fill='url(%23g)'/%3E%3Cpath d='M50 28 L57 44 L74 44 L61 55 L66 72 L50 61 L34 72 L39 55 L26 44 L43 44 Z' fill='white' opacity='0.92'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ======== 导航 ======== -->
+  <header class="site-header">
+    <div class="container nav-inner">
+      <a class="brand" href="index.html" aria-label="返回首页">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 4 L14.4 9.6 L20 12 L14.4 14.4 L12 20 L9.6 14.4 L4 12 L9.6 9.6 Z" fill="#fff"/></svg>
+        </span>
+        <span class="brand-cn">个人主页</span>
+        <span class="brand-en">Portfolio</span>
+      </a>
+
+      <nav aria-label="主导航">
+        <ul class="nav-links" id="navLinks">
+          <li><a href="index.html" class="active">主页</a></li>
+          <li><a href="projects.html">项目</a></li>
+          <li><a href="about.html">关于</a></li>
+          <li><a href="contact.html">联系</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-actions">
+        <div class="theme-menu">
+          <button class="icon-btn" id="themeBtn" aria-label="切换主题" title="切换主题">
+            <svg id="themeIcon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <circle cx="12" cy="12" r="4.2"/>
+              <path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5 5l1.7 1.7M17.3 17.3 19 19M19 5l-1.7 1.7M6.7 17.3 5 19"/>
+            </svg>
+          </button>
+          <div class="theme-pop" id="themePop" role="menu">
+            <button class="theme-opt" data-theme="light" role="menuitem">浅色 <span class="check">✓</span></button>
+            <button class="theme-opt" data-theme="dark" role="menuitem">深色 <span class="check">✓</span></button>
+            <button class="theme-opt" data-theme="system" role="menuitem">跟随系统 <span class="check">✓</span></button>
+          </div>
+        </div>
+        <button class="icon-btn" id="navToggle" aria-label="切换导航菜单" title="菜单">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="page-main">
+
+    <!-- ======== Hero ======== -->
+    <section class="hero">
+      <div class="container">
+        <div class="hero-art" aria-hidden="true">
+          <svg viewBox="0 0 128 128">
+            <circle class="ring" cx="64" cy="64" r="56"/>
+            <circle class="ring" cx="64" cy="64" r="42" opacity="0.45"/>
+            <path class="inner" d="M64 34 L76 62 L64 92 L52 62 Z" stroke-linejoin="round"/>
+            <path class="inner" d="M40 48 Q64 36 88 48" stroke-linecap="round"/>
+            <path class="inner" d="M40 80 Q64 92 88 80" stroke-linecap="round"/>
+            <circle class="accent" cx="64" cy="62" r="5"/>
+          </svg>
+        </div>
+
+        <div class="hero-badge"><span class="dot"></span> 在线 · 接受合作邀约</div>
+        <h1>你好，我是 <span class="grad">你的名字</span></h1> <!-- TODO: 替换为你的名字 -->
+        <p class="sub">全栈开发者，专注构建流畅、可靠、有温度的数字产品。将复杂问题转化为简洁体验。</p> <!-- TODO: 替换为你的职业描述 -->
+        <p class="meta">TypeScript · React · Node.js · 三年全栈经验</p> <!-- TODO: 替换为你擅长的技术 -->
+
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="projects.html">查看我的项目</a>
+          <a class="btn btn-ghost" href="contact.html">联系我</a>
+        </div>
+
+        <div class="scroll-hint">往下滚动，了解更多 ↓</div>
+      </div>
+    </section>
+
+    <!-- ======== 能力板块（参考站 IDE 集成风格） ======== -->
+    <section class="section">
+      <div class="container">
+
+        <!-- 板块 1 -->
+        <div class="feature-block reveal">
+          <div class="feature-left">
+            <span class="tag">前端</span>
+            <h3>构建精致的界面体验</h3>
+            <p>关注交互细节与视觉质感，从设计系统到像素级还原，让每个页面都经得起推敲。擅长响应式布局、动效与无障碍。</p>
+            <div class="feature-links">
+              <a href="projects.html">相关项目 →</a>
+            </div>
+          </div>
+          <div class="code-card">
+            <div class="code-head"><span class="traffic"><i></i><i></i><i></i></span><span>terminal</span></div>
+            <div class="code-body">
+              <span class="code-tab">Node.js</span>
+              <pre><span class="c-cmd">npm</span> create vite@latest my-site -- --template react-ts
+<span class="c-cmd">cd</span> my-site
+<span class="c-cmd">npm</span> install
+<span class="c-cmd">npm</span> run dev</pre>
+              <div class="path-line">vite.config.ts</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 板块 2 -->
+        <div class="feature-block reveal">
+          <div class="feature-left">
+            <span class="tag">后端</span>
+            <h3>打造可靠的服务端</h3>
+            <p>设计高可用的 API 与数据模型，关注性能与可维护性。从数据库设计到部署上线，完整交付业务闭环。</p>
+            <div class="feature-links">
+              <a href="projects.html">相关项目 →</a>
+            </div>
+          </div>
+          <div class="code-card">
+            <div class="code-head"><span class="traffic"><i></i><i></i><i></i></span><span>terminal</span></div>
+            <div class="code-body">
+              <span class="code-tab">Node.js</span>
+              <pre><span class="c-cmd">npm</span> install -g @my-toolkit/cli
+<span class="c-cmd">my-toolkit</span> init --stack=node
+<span class="c-cmd">my-toolkit</span> deploy --env=prod</pre>
+              <div class="path-line">~/.my-toolkit/config.json</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 板块 3 -->
+        <div class="feature-block reveal">
+          <div class="feature-left">
+            <span class="tag">效率</span>
+            <h3>用工具武装工作流</h3>
+            <p>热衷自动化与 AI 提效，把重复劳动交给脚本，把时间留给创造。持续探索更好的工程实践。</p>
+            <div class="feature-links">
+              <a href="about.html">我的工具箱 →</a>
+            </div>
+          </div>
+          <div class="code-card">
+            <div class="code-head"><span class="traffic"><i></i><i></i><i></i></span><span>terminal</span></div>
+            <div class="code-body">
+              <span class="code-tab">Shell</span>
+              <pre><span class="c-cmd">alias</span> gac=<span class="c-str">'git add -A && git commit -m'</span>
+<span class="c-cmd">alias</span> dev=<span class="c-str">'npm run dev'</span>
+<span class="c-cmd">alias</span> deploy=<span class="c-str">'sh deploy.sh'</span></pre>
+              <div class="path-line">~/.zshrc</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ======== 精选项目 ======== -->
+    <section class="section" id="projects">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="tag">精选项目</span>
+          <h2>最近在做的事</h2>
+          <p class="lead">一些用心打磨的作品，从想法到上线。完整列表见项目页。</p>
+        </div>
+
+        <div class="grid-head reveal">
+          <div class="grid-count">共 <b>3</b> 个精选项目</div>
+          <a class="btn btn-sm btn-ghost" href="projects.html">全部项目 →</a>
+        </div>
+
+        <div class="card-grid" id="featuredGrid">
+          <!-- 项目卡片由 js/main.js 渲染 -->
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ======== 页脚 ======== -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <span>© <span id="year"></span> 你的名字 · 保留所有权利</span> <!-- TODO: 替换为你的名字 -->
+      <div class="footer-links">
+        <a href="https://github.com/" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://gitee.com/" target="_blank" rel="noopener">Gitee</a>
+        <a href="mailto:you@example.com">邮箱</a> <!-- TODO: 替换为你的邮箱 -->
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

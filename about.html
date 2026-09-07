@@ -1,0 +1,129 @@
+<!doctype html>
+<!-- 个人主页 · 关于页 —— 个人简介、技能标签、经历时间线 -->
+<html lang="zh-CN" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>关于 · 个人主页</title>
+  <meta name="description" content="关于我 —— 个人简介与经历。" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%233ec6e0'/%3E%3Cstop offset='0.5' stop-color='%236e5be8'/%3E%3Cstop offset='1' stop-color='%23c86ef0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='46' fill='url(%23g)'/%3E%3Cpath d='M50 28 L57 44 L74 44 L61 55 L66 72 L50 61 L34 72 L39 55 L26 44 L43 44 Z' fill='white' opacity='0.92'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container nav-inner">
+      <a class="brand" href="index.html" aria-label="返回首页">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 4 L14.4 9.6 L20 12 L14.4 14.4 L12 20 L9.6 14.4 L4 12 L9.6 9.6 Z" fill="#fff"/></svg>
+        </span>
+        <span class="brand-cn">个人主页</span>
+        <span class="brand-en">Portfolio</span>
+      </a>
+      <nav aria-label="主导航">
+        <ul class="nav-links" id="navLinks">
+          <li><a href="index.html">主页</a></li>
+          <li><a href="projects.html">项目</a></li>
+          <li><a href="about.html" class="active">关于</a></li>
+          <li><a href="contact.html">联系</a></li>
+        </ul>
+      </nav>
+      <div class="nav-actions">
+        <div class="theme-menu">
+          <button class="icon-btn" id="themeBtn" aria-label="切换主题" title="切换主题">
+            <svg id="themeIcon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <circle cx="12" cy="12" r="4.2"/>
+              <path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5 5l1.7 1.7M17.3 17.3 19 19M19 5l-1.7 1.7M6.7 17.3 5 19"/>
+            </svg>
+          </button>
+          <div class="theme-pop" id="themePop" role="menu">
+            <button class="theme-opt" data-theme="light" role="menuitem">浅色 <span class="check">✓</span></button>
+            <button class="theme-opt" data-theme="dark" role="menuitem">深色 <span class="check">✓</span></button>
+            <button class="theme-opt" data-theme="system" role="menuitem">跟随系统 <span class="check">✓</span></button>
+          </div>
+        </div>
+        <button class="icon-btn" id="navToggle" aria-label="切换导航菜单" title="菜单">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="page-main">
+    <section class="section" style="padding-top: 2.5rem;">
+      <div class="container about-grid">
+
+        <!-- 左侧名片卡 -->
+        <aside class="avatar-card reveal">
+          <div class="avatar">你</div> <!-- TODO: 替换为你的头像或姓名首字 -->
+          <h3>你的名字</h3> <!-- TODO -->
+          <p class="role">全栈开发者 · 上海</p> <!-- TODO -->
+          <ul class="meta-list">
+            <li><b>坐标</b> 上海</li>
+            <li><b>方向</b> Web 全栈 / AI 应用</li>
+            <li><b>经验</b> 3 年+</li>
+            <li><b>邮箱</b> you@example.com</li> <!-- TODO -->
+          </ul>
+        </aside>
+
+        <!-- 右侧正文 -->
+        <div class="about-body reveal">
+          <span class="tag">关于我</span>
+          <h2>把热爱做成事业的人</h2>
+          <p>
+            你好，我是 <b>你的名字</b>，一名全栈开发者。我享受从一行代码到完整产品的全过程——
+            喜欢把复杂的问题拆解成优雅的方案，也喜欢在细节里打磨体验。工作之余，我热衷于折腾新工具、开源项目和技术写作。
+          </p>
+          <p>
+            我的技术旅程始于对网页的好奇，如今已覆盖前端工程化、服务端架构与 AI 应用开发。
+            相信好的技术应当为人服务，让生活更简单、更有趣。
+          </p>
+
+          <!-- 技能标签 -->
+          <div class="skill-cloud" id="skillCloud" style="margin-top: 2rem;">
+            <!-- 由 js 渲染 -->
+          </div>
+
+          <!-- 经历时间线 -->
+          <div class="timeline">
+            <h3>经历时间线</h3>
+
+            <div class="tl-item">
+              <div class="tl-date">2024 — 至今</div>
+              <div class="tl-title">全栈开发者 · 某科技公司</div>
+              <div class="tl-desc">负责核心业务的前后端开发与架构演进，主导多个从 0 到 1 的项目上线。</div>
+            </div>
+
+            <div class="tl-item">
+              <div class="tl-date">2022 — 2024</div>
+              <div class="tl-title">前端工程师 · 某互联网公司</div>
+              <div class="tl-desc">参与大型管理后台与 C 端产品的开发，沉淀组件库与工程化方案。</div>
+            </div>
+
+            <div class="tl-item">
+              <div class="tl-date">2020 — 2022</div>
+              <div class="tl-title">计算机科学与技术 · 本科</div>
+              <div class="tl-desc">系统学习计算机基础，开始独立开发个人项目并尝试开源。</div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <span>© <span id="year"></span> 你的名字 · 保留所有权利</span>
+      <div class="footer-links">
+        <a href="https://github.com/" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://gitee.com/" target="_blank" rel="noopener">Gitee</a>
+        <a href="mailto:you@example.com">邮箱</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

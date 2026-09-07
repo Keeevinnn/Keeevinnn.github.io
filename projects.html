@@ -1,0 +1,95 @@
+<!doctype html>
+<!-- 个人主页 · 项目页 —— 参考站「模型广场」风格的卡片网格，数据在 js/main.js 的 PROJECTS 数组维护 -->
+<html lang="zh-CN" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>项目 · 个人主页</title>
+  <meta name="description" content="项目作品集 —— 精选项目展示。" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%233ec6e0'/%3E%3Cstop offset='0.5' stop-color='%236e5be8'/%3E%3Cstop offset='1' stop-color='%23c86ef0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='46' fill='url(%23g)'/%3E%3Cpath d='M50 28 L57 44 L74 44 L61 55 L66 72 L50 61 L34 72 L39 55 L26 44 L43 44 Z' fill='white' opacity='0.92'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container nav-inner">
+      <a class="brand" href="index.html" aria-label="返回首页">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 4 L14.4 9.6 L20 12 L14.4 14.4 L12 20 L9.6 14.4 L4 12 L9.6 9.6 Z" fill="#fff"/></svg>
+        </span>
+        <span class="brand-cn">个人主页</span>
+        <span class="brand-en">Portfolio</span>
+      </a>
+      <nav aria-label="主导航">
+        <ul class="nav-links" id="navLinks">
+          <li><a href="index.html">主页</a></li>
+          <li><a href="projects.html" class="active">项目</a></li>
+          <li><a href="about.html">关于</a></li>
+          <li><a href="contact.html">联系</a></li>
+        </ul>
+      </nav>
+      <div class="nav-actions">
+        <div class="theme-menu">
+          <button class="icon-btn" id="themeBtn" aria-label="切换主题" title="切换主题">
+            <svg id="themeIcon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <circle cx="12" cy="12" r="4.2"/>
+              <path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5 5l1.7 1.7M17.3 17.3 19 19M19 5l-1.7 1.7M6.7 17.3 5 19"/>
+            </svg>
+          </button>
+          <div class="theme-pop" id="themePop" role="menu">
+            <button class="theme-opt" data-theme="light" role="menuitem">浅色 <span class="check">✓</span></button>
+            <button class="theme-opt" data-theme="dark" role="menuitem">深色 <span class="check">✓</span></button>
+            <button class="theme-opt" data-theme="system" role="menuitem">跟随系统 <span class="check">✓</span></button>
+          </div>
+        </div>
+        <button class="icon-btn" id="navToggle" aria-label="切换导航菜单" title="菜单">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="page-main">
+    <section class="section" style="padding-top: 2.5rem;">
+      <div class="container">
+
+        <div class="section-head reveal">
+          <span class="tag">项目集</span>
+          <h2>项目广场</h2>
+          <p class="lead">探索我的精选项目，清晰比较技术栈与成果，为不同场景找到灵感。</p>
+        </div>
+
+        <div class="grid-head reveal">
+          <div class="search-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+            <input type="search" id="searchInput" placeholder="搜索项目名称、技术栈或标签..." aria-label="搜索项目" />
+          </div>
+          <div class="grid-count" id="projectCount">共 <b>0</b> 个项目</div>
+        </div>
+
+        <div class="filter-bar reveal" id="filterBar"><!-- 筛选 chip 由 js 渲染 --></div>
+
+        <div class="card-grid" id="projectGrid"><!-- 项目卡片由 js 渲染 --></div>
+
+        <div class="empty" id="emptyState">
+          <p>没有找到匹配的项目，换个关键词试试。</p>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <span>© <span id="year"></span> 你的名字 · 保留所有权利</span>
+      <div class="footer-links">
+        <a href="https://github.com/" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://gitee.com/" target="_blank" rel="noopener">Gitee</a>
+        <a href="mailto:you@example.com">邮箱</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
