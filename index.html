@@ -1,208 +1,221 @@
 <!doctype html>
 <!--
   ==========================================================================
-  个人主页 · 首页
-  风格参考：词元枢阁 Token Nexus
+  个人主页 · 单页展示型官网（苹果官网设计风格）
   --------------------------------------------------------------------------
-  【个人信息替换清单】打开本文件搜索「TODO:」即可找到所有占位处：
-    1. 页面标题与站名（<title>、.brand-cn）
-    2. Hero 标题中的「你的名字」
-    3. 副标题中的职业描述（.hero .sub）
-    4. 能力板块的文字与代码块内容
-    5. 项目卡片的数据（在 js/main.js 的 PROJECTS 数组里维护）
-    6. 页脚版权
+  【如何修改成你的信息】
+  所有个人真实信息统一使用「XX」占位，集中配置在 js/main.js 顶部的 SITE 对象中，
+  只需修改那一处即可全站生效，无需改动 HTML 结构。
   ==========================================================================
 -->
-<html lang="zh-CN" data-theme="light">
+<html lang="zh-CN" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>你的名字 · 个人主页</title> <!-- TODO: 替换为你的名字 -->
-  <meta name="description" content="个人主页 —— 全栈开发者，用热爱构建数字产品。" />
-  <meta name="theme-color" content="#faf9f5" />
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%233ec6e0'/%3E%3Cstop offset='0.5' stop-color='%236e5be8'/%3E%3Cstop offset='1' stop-color='%23c86ef0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='46' fill='url(%23g)'/%3E%3Cpath d='M50 28 L57 44 L74 44 L61 55 L66 72 L50 61 L34 72 L39 55 L26 44 L43 44 Z' fill='white' opacity='0.92'/%3E%3C/svg%3E" />
+  <title>XX 的个人主页 · Portfolio</title>
+  <meta name="description" content="XX 的个人主页 —— 前端开发者 / 设计爱好者 / 自由创作者。个人形象展示、能力介绍、作品沉淀与联系方式。" />
+  <meta name="keywords" content="个人主页,作品集,前端开发,XX,Portfolio" />
+  <meta name="theme-color" content="#000000" />
+  <meta property="og:title" content="XX 的个人主页" />
+  <meta property="og:description" content="个人展示型官网 —— 能力介绍、作品沉淀、联系方式。" />
+  <meta property="og:type" content="website" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%232997ff'/%3E%3Cstop offset='1' stop-color='%237a5cff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g)'/%3E%3Ctext x='32' y='42' font-family='-apple-system,sans-serif' font-size='26' font-weight='700' fill='white' text-anchor='middle'%3EXX%3C/text%3E%3C/svg%3E" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
 
-  <!-- ======== 导航 ======== -->
-  <header class="site-header">
+  <!-- ============ 导航栏（全局吸顶） ============ -->
+  <header class="site-header" id="siteHeader">
     <div class="container nav-inner">
-      <a class="brand" href="index.html" aria-label="返回首页">
-        <span class="brand-mark" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none"><path d="M12 4 L14.4 9.6 L20 12 L14.4 14.4 L12 20 L9.6 14.4 L4 12 L9.6 9.6 Z" fill="#fff"/></svg>
-        </span>
-        <span class="brand-cn">个人主页</span>
-        <span class="brand-en">Portfolio</span>
+      <a class="brand" href="#top" aria-label="返回首页">
+        <span class="brand-mark" id="brandMark">XX</span>
+        <span id="brandName">XX</span>
       </a>
 
       <nav aria-label="主导航">
         <ul class="nav-links" id="navLinks">
-          <li><a href="index.html" class="active">主页</a></li>
-          <li><a href="projects.html">项目</a></li>
-          <li><a href="about.html">关于</a></li>
-          <li><a href="contact.html">联系</a></li>
+          <li><a href="#top" class="active">首页</a></li>
+          <li><a href="#about">关于我</a></li>
+          <li><a href="#projects">项目作品</a></li>
+          <li><a href="#contact">联系我</a></li>
         </ul>
       </nav>
 
       <div class="nav-actions">
-        <div class="theme-menu">
-          <button class="icon-btn" id="themeBtn" aria-label="切换主题" title="切换主题">
-            <svg id="themeIcon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-              <circle cx="12" cy="12" r="4.2"/>
-              <path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5 5l1.7 1.7M17.3 17.3 19 19M19 5l-1.7 1.7M6.7 17.3 5 19"/>
-            </svg>
-          </button>
-          <div class="theme-pop" id="themePop" role="menu">
-            <button class="theme-opt" data-theme="light" role="menuitem">浅色 <span class="check">✓</span></button>
-            <button class="theme-opt" data-theme="dark" role="menuitem">深色 <span class="check">✓</span></button>
-            <button class="theme-opt" data-theme="system" role="menuitem">跟随系统 <span class="check">✓</span></button>
-          </div>
-        </div>
+        <button class="icon-btn" id="themeBtn" aria-label="切换深浅色模式" title="切换深浅色模式">
+          <svg id="themeIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <circle cx="12" cy="12" r="4.2"/>
+            <path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5 5l1.7 1.7M17.3 17.3 19 19M19 5l-1.7 1.7M6.7 17.3 5 19"/>
+          </svg>
+        </button>
         <button class="icon-btn" id="navToggle" aria-label="切换导航菜单" title="菜单">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
         </button>
       </div>
     </div>
   </header>
 
-  <main class="page-main">
+  <main id="top">
 
-    <!-- ======== Hero ======== -->
-    <section class="hero">
-      <div class="container">
-        <div class="hero-art" aria-hidden="true">
-          <svg viewBox="0 0 128 128">
-            <circle class="ring" cx="64" cy="64" r="56"/>
-            <circle class="ring" cx="64" cy="64" r="42" opacity="0.45"/>
-            <path class="inner" d="M64 34 L76 62 L64 92 L52 62 Z" stroke-linejoin="round"/>
-            <path class="inner" d="M40 48 Q64 36 88 48" stroke-linecap="round"/>
-            <path class="inner" d="M40 80 Q64 92 88 80" stroke-linecap="round"/>
-            <circle class="accent" cx="64" cy="62" r="5"/>
-          </svg>
-        </div>
+    <!-- ============ Hero 首屏 ============ -->
+    <section class="hero" id="hero">
+      <!-- 极简粒子（CSS 生成） -->
+      <span class="particle" style="width:5px;height:5px;left:18%;top:58%;animation-delay:0s;"></span>
+      <span class="particle" style="width:4px;height:4px;left:30%;top:70%;animation-delay:2.4s;"></span>
+      <span class="particle" style="width:6px;height:6px;left:74%;top:60%;animation-delay:1.2s;"></span>
+      <span class="particle" style="width:4px;height:4px;left:84%;top:72%;animation-delay:3.6s;"></span>
+      <span class="particle" style="width:5px;height:5px;left:64%;top:82%;animation-delay:5s;"></span>
+      <span class="particle" style="width:3px;height:3px;left:44%;top:66%;animation-delay:4.2s;"></span>
 
-        <div class="hero-badge"><span class="dot"></span> 在线 · 接受合作邀约</div>
-        <h1>你好，我是 <span class="grad">你的名字</span></h1> <!-- TODO: 替换为你的名字 -->
-        <p class="sub">全栈开发者，专注构建流畅、可靠、有温度的数字产品。将复杂问题转化为简洁体验。</p> <!-- TODO: 替换为你的职业描述 -->
-        <p class="meta">TypeScript · React · Node.js · 三年全栈经验</p> <!-- TODO: 替换为你擅长的技术 -->
-
+      <div class="hero-inner">
+        <div class="hero-badge"><span class="dot"></span><span id="heroBadge">在线 · 接受合作邀约</span></div>
+        <h1 id="heroTitle">XX 的个人主页</h1>
+        <p class="sub" id="heroSub">前端开发者 / 设计爱好者 / 自由创作者</p>
+        <p class="motto" id="heroMotto">保持好奇，持续创造，用代码把想法变成现实。</p>
         <div class="hero-cta">
-          <a class="btn btn-primary" href="projects.html">查看我的项目</a>
-          <a class="btn btn-ghost" href="contact.html">联系我</a>
+          <a class="btn btn-primary" href="#projects">查看作品</a>
+          <a class="btn btn-ghost" href="#contact">联系我</a>
         </div>
+      </div>
 
-        <div class="scroll-hint">往下滚动，了解更多 ↓</div>
+      <div class="hero-scroll" aria-hidden="true">
+        <span class="mouse"></span>
+        <span>向下滚动</span>
       </div>
     </section>
 
-    <!-- ======== 能力板块（参考站 IDE 集成风格） ======== -->
-    <section class="section">
+    <!-- ============ 关于我 ============ -->
+    <section class="section" id="about">
       <div class="container">
+        <div class="section-head reveal">
+          <span class="kicker">About Me</span>
+          <h2>关于我</h2>
+          <p>了解我的基本信息、技能与经历。</p>
+        </div>
 
-        <!-- 板块 1 -->
-        <div class="feature-block reveal">
-          <div class="feature-left">
-            <span class="tag">前端</span>
-            <h3>构建精致的界面体验</h3>
-            <p>关注交互细节与视觉质感，从设计系统到像素级还原，让每个页面都经得起推敲。擅长响应式布局、动效与无障碍。</p>
-            <div class="feature-links">
-              <a href="projects.html">相关项目 →</a>
+        <div class="about-grid">
+          <!-- 基础信息卡片 -->
+          <aside class="info-card reveal reveal-d1">
+            <div class="avatar-wrap" id="avatarWrap">
+              <!-- 头像图片插槽：有图自动懒加载，无图显示 XX 占位 -->
+              <img data-src="" alt="头像" id="avatarImg" />
+              <span class="ph">XX</span>
             </div>
-          </div>
-          <div class="code-card">
-            <div class="code-head"><span class="traffic"><i></i><i></i><i></i></span><span>terminal</span></div>
-            <div class="code-body">
-              <span class="code-tab">Node.js</span>
-              <pre><span class="c-cmd">npm</span> create vite@latest my-site -- --template react-ts
-<span class="c-cmd">cd</span> my-site
-<span class="c-cmd">npm</span> install
-<span class="c-cmd">npm</span> run dev</pre>
-              <div class="path-line">vite.config.ts</div>
+            <h3 id="infoName">XX</h3>
+            <p class="role" id="infoRole">前端开发者</p>
+            <ul class="info-list">
+              <li><span class="k">姓名</span><span class="v" id="infoName2">XX</span></li>
+              <li><span class="k">年龄</span><span class="v" id="infoAge">XX</span></li>
+              <li><span class="k">所在地</span><span class="v" id="infoLoc">XX</span></li>
+              <li><span class="k">职业</span><span class="v" id="infoCareer">XX</span></li>
+            </ul>
+          </aside>
+
+          <!-- 简介 / 技能 / 时间轴 -->
+          <div class="about-body reveal reveal-d2">
+            <h3>你好，我是 XX</h3>
+            <div id="aboutIntro"><!-- 简介段落由 js 渲染 --></div>
+
+            <div class="skills">
+              <h4>技能标签</h4>
+              <div class="skill-cloud" id="skillCloud"><!-- 由 js 渲染 --></div>
+            </div>
+
+            <div class="timeline">
+              <h4>经历履历</h4>
+              <div id="timeline"><!-- 时间轴由 js 渲染 --></div>
             </div>
           </div>
         </div>
-
-        <!-- 板块 2 -->
-        <div class="feature-block reveal">
-          <div class="feature-left">
-            <span class="tag">后端</span>
-            <h3>打造可靠的服务端</h3>
-            <p>设计高可用的 API 与数据模型，关注性能与可维护性。从数据库设计到部署上线，完整交付业务闭环。</p>
-            <div class="feature-links">
-              <a href="projects.html">相关项目 →</a>
-            </div>
-          </div>
-          <div class="code-card">
-            <div class="code-head"><span class="traffic"><i></i><i></i><i></i></span><span>terminal</span></div>
-            <div class="code-body">
-              <span class="code-tab">Node.js</span>
-              <pre><span class="c-cmd">npm</span> install -g @my-toolkit/cli
-<span class="c-cmd">my-toolkit</span> init --stack=node
-<span class="c-cmd">my-toolkit</span> deploy --env=prod</pre>
-              <div class="path-line">~/.my-toolkit/config.json</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 板块 3 -->
-        <div class="feature-block reveal">
-          <div class="feature-left">
-            <span class="tag">效率</span>
-            <h3>用工具武装工作流</h3>
-            <p>热衷自动化与 AI 提效，把重复劳动交给脚本，把时间留给创造。持续探索更好的工程实践。</p>
-            <div class="feature-links">
-              <a href="about.html">我的工具箱 →</a>
-            </div>
-          </div>
-          <div class="code-card">
-            <div class="code-head"><span class="traffic"><i></i><i></i><i></i></span><span>terminal</span></div>
-            <div class="code-body">
-              <span class="code-tab">Shell</span>
-              <pre><span class="c-cmd">alias</span> gac=<span class="c-str">'git add -A && git commit -m'</span>
-<span class="c-cmd">alias</span> dev=<span class="c-str">'npm run dev'</span>
-<span class="c-cmd">alias</span> deploy=<span class="c-str">'sh deploy.sh'</span></pre>
-              <div class="path-line">~/.zshrc</div>
-            </div>
-          </div>
-        </div>
-
       </div>
     </section>
 
-    <!-- ======== 精选项目 ======== -->
+    <!-- ============ 项目作品 ============ -->
     <section class="section" id="projects">
       <div class="container">
         <div class="section-head reveal">
-          <span class="tag">精选项目</span>
-          <h2>最近在做的事</h2>
-          <p class="lead">一些用心打磨的作品，从想法到上线。完整列表见项目页。</p>
+          <span class="kicker">Portfolio</span>
+          <h2>项目作品</h2>
+          <p>沉淀的作品与尝试，点击卡片查看详情。</p>
         </div>
 
-        <div class="grid-head reveal">
-          <div class="grid-count">共 <b>3</b> 个精选项目</div>
-          <a class="btn btn-sm btn-ghost" href="projects.html">全部项目 →</a>
-        </div>
+        <div class="filter-bar reveal" id="filterBar"><!-- 分类筛选由 js 渲染 --></div>
 
-        <div class="card-grid" id="featuredGrid">
-          <!-- 项目卡片由 js/main.js 渲染 -->
+        <div class="card-grid" id="cardGrid"><!-- 作品卡片由 js 渲染 --></div>
+
+        <div class="empty reveal" id="emptyState">
+          <div class="empty-ico">◌</div>
+          <p>暂无作品，正在打磨中，敬请期待。</p>
         </div>
       </div>
     </section>
 
+    <!-- ============ 联系方式 ============ -->
+    <section class="section" id="contact">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="kicker">Contact</span>
+          <h2>联系我</h2>
+          <p>点击卡片可一键复制邮箱 / 微信号，期待与你交流。</p>
+        </div>
+
+        <div class="contact-grid" id="contactGrid"><!-- 社交链接由 js 渲染 --></div>
+
+        <!-- 留言板 -->
+        <div class="guestbook reveal">
+          <h3>给我留言</h3>
+          <p class="gb-sub">欢迎留下你的想法，我会尽快回复。</p>
+          <form id="guestForm" novalidate>
+            <div class="field">
+              <input type="text" id="gbName" placeholder="你的称呼" autocomplete="name" required />
+            </div>
+            <div class="field">
+              <input type="email" id="gbEmail" placeholder="联系邮箱（选填）" autocomplete="email" />
+            </div>
+            <div class="field">
+              <textarea id="gbMsg" placeholder="想说的话..." required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">发送留言 →</button>
+          </form>
+        </div>
+      </div>
+    </section>
   </main>
 
-  <!-- ======== 页脚 ======== -->
+  <!-- ============ 页脚 ============ -->
   <footer class="site-footer">
     <div class="container footer-inner">
-      <span>© <span id="year"></span> 你的名字 · 保留所有权利</span> <!-- TODO: 替换为你的名字 -->
+      <span>© <span id="footerYear">20XX</span> <span id="footerName">XX</span> All Rights Reserved.</span>
       <div class="footer-links">
-        <a href="https://github.com/" target="_blank" rel="noopener">GitHub</a>
-        <a href="https://gitee.com/" target="_blank" rel="noopener">Gitee</a>
-        <a href="mailto:you@example.com">邮箱</a> <!-- TODO: 替换为你的邮箱 -->
+        <a href="#top">回到顶部 ↑</a>
+      </div>
+      <div class="footer-extra">
+        基于原生 HTML / CSS / JavaScript 构建 · 静态部署于 GitHub Pages<br />
+        <span id="icpSlot" style="display:none;">ICP 备案信息预留位</span>
       </div>
     </div>
   </footer>
+
+  <!-- ============ 作品详情弹窗 ============ -->
+  <div class="modal-mask" id="modalMask" role="dialog" aria-modal="true" aria-label="作品详情">
+    <div class="modal" id="modalBox">
+      <button class="modal-close" id="modalClose" aria-label="关闭">✕</button>
+      <div class="modal-cover" id="modalCover"><!-- 由 js 填充 --></div>
+      <h3 id="modalTitle">XX</h3>
+      <p class="m-time" id="modalTime"></p>
+      <p class="m-desc" id="modalDesc"></p>
+      <div class="m-tags" id="modalTags"></div>
+      <div class="modal-actions" id="modalActions"></div>
+    </div>
+  </div>
+
+  <!-- 返回顶部 -->
+  <button id="backTop" aria-label="返回顶部" title="返回顶部">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+  </button>
+
+  <!-- 复制成功提示 -->
+  <div class="toast" id="toast"><span class="t-ok">✓</span><span id="toastText">已复制到剪贴板</span></div>
 
   <script src="js/main.js"></script>
 </body>

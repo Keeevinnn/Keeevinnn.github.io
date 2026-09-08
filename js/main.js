@@ -1,256 +1,243 @@
 /* ==========================================================================
  * 个人主页 · 交互脚本
- * 功能：主题切换 / 移动端导航 / 项目渲染与筛选 / 技能标签 / 表单校验 / 入场动画
- * ======================================================================== */
+ * --------------------------------------------------------------------------
+ * ★ 修改个人信息只需编辑下方 SITE 配置对象，全站自动生效。
+ *   - 所有隐私/专属信息统一使用「XX」占位，请替换为你的真实信息
+ *   - projects 数组清空（[]）时页面自动显示"暂无作品"空状态
+ *   - 作品封面：cover 填图片 URL 即自动懒加载；留空显示 XX 极简占位
+ * ========================================================================== */
 (function () {
   'use strict';
 
-  /* ---------- 0. 页脚年份 ---------- */
-  var yearEl = document.getElementById('year');
-  if (yearEl) yearEl.textContent = String(new Date().getFullYear());
-
   /* ========================================================================
-   * 1. 项目数据
-   * --------------------------------------------------------------
-   * 这里是全站项目列表，按需增删改。字段说明：
-   *   name  项目名称        desc  一句话简介
-   *   tags  技术栈标签      cat   分类（决定筛选 chip）
-   *   icon  卡片图标（单字或字母）   status  状态文字  ok/warn 控制状态点颜色
-   *   href  详情链接（可填 # 或真实地址）   featured  是否出现在首页精选
+   * SITE —— 全站个人信息配置（唯一修改入口）
    * ======================================================================== */
-  var PROJECTS = [
-    {
-      name: '智绘笔记',
-      desc: '支持 AI 摘要与手写识别的笔记应用，离线可用，端到端加密存储。',
-      tags: ['React', 'TypeScript', 'IndexedDB'],
-      cat: 'Web 应用',
-      icon: '智',
-      status: '维护中',
-      ok: true,
-      href: '#',
-      featured: true
-    },
-    {
-      name: 'ApiBoard',
-      desc: '轻量 API 调试与文档工具，像管理后台一样管理你的接口。',
-      tags: ['Vue 3', 'Node.js', 'WebSocket'],
-      cat: 'Web 应用',
-      icon: 'A',
-      status: '已上线',
-      ok: true,
-      href: '#',
-      featured: true
-    },
-    {
-      name: 'AutoDeploy CLI',
-      desc: '一条命令完成构建、测试与部署的自动化工具，支持多环境回滚。',
-      tags: ['Node.js', 'Shell', 'CI/CD'],
-      cat: '工具链',
-      icon: 'D',
-      status: '已上线',
-      ok: true,
-      href: '#',
-      featured: true
-    },
-    {
-      name: 'PixelForge',
-      desc: '浏览器内的像素画编辑器，支持图层、动效导出与分享社区。',
-      tags: ['Canvas', 'TypeScript', 'PWA'],
-      cat: 'Web 应用',
-      icon: 'P',
-      status: '开发中',
-      ok: false,
-      href: '#',
-      featured: false
-    },
-    {
-      name: 'ChatFlow',
-      desc: '可视化搭建 AI 对话工作流，拖拽节点即可生成多轮智能体。',
-      tags: ['React', 'Python', 'LLM'],
-      cat: 'AI 应用',
-      icon: 'C',
-      status: '已上线',
-      ok: true,
-      href: '#',
-      featured: false
-    },
-    {
-      name: '数据洞察仪表盘',
-      desc: '通用 BI 仪表盘模板，支持拖拽图表、自定义指标与定时报表。',
-      tags: ['ECharts', 'Vue 3', 'PostgreSQL'],
-      cat: 'Web 应用',
-      icon: 'BI',
-      status: '维护中',
-      ok: true,
-      href: '#',
-      featured: false
-    },
-    {
-      name: 'OpenAPI 网关',
-      desc: '面向团队的统一 API 网关，提供密钥管理、用量统计与限流。',
-      tags: ['Go', 'Redis', 'gRPC'],
-      cat: '工具链',
-      icon: 'G',
-      status: '维护中',
-      ok: true,
-      href: '#',
-      featured: false
-    },
-    {
-      name: '每日一题',
-      desc: '命令行刷题助手，聚合多平台算法题，支持打卡与学习曲线统计。',
-      tags: ['Python', 'CLI', 'SQLite'],
-      cat: 'AI 应用',
-      icon: 'Q',
-      status: '开发中',
-      ok: false,
-      href: '#',
-      featured: false
-    }
-  ];
+  var SITE = {
+    /* 品牌 / 昵称 */
+    brand: 'XX',                  // Logo 与导航昵称
+    name: 'XX',                   // 姓名
 
-  /* ---------- 技能标签（关于页） ---------- */
-  var SKILLS = ['TypeScript', 'React', 'Vue 3', 'Node.js', 'Go', 'Python', 'PostgreSQL', 'Redis', 'Docker', 'Git', 'CI/CD', 'AI 应用开发', 'UI/UX 基础'];
+    /* Hero 首屏 */
+    hero: {
+      badge: '在线 · 接受合作邀约',
+      title: 'XX 的个人主页',       // 主标题（Hello, I'm XX）
+      sub: '前端开发者 / 设计爱好者 / 自由创作者',
+      motto: '保持好奇，持续创造，用代码把想法变成现实。'
+    },
 
-  /* ========================================================================
-   * 2. 主题切换（浅色 / 深色 / 跟随系统，localStorage 持久化）
-   * ======================================================================== */
-  var THEME_KEY = 'ps-theme';
+    /* 头像：填图片 URL 自动加载，留空显示 XX 占位 */
+    avatar: '',
 
-  function resolveTheme(pref) {
-    if (pref === 'light' || pref === 'dark') return pref;
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-  }
+    /* 关于我 · 基础信息 */
+    basic: {
+      age: 'XX',                  // 年龄
+      location: 'XX',             // 所在地
+      career: 'XX'                // 职业
+    },
 
-  function applyTheme(pref) {
-    var theme = resolveTheme(pref);
-    document.documentElement.setAttribute('data-theme', theme);
-    var icon = document.getElementById('themeIcon');
-    if (icon) {
-      if (theme === 'dark') {
-        icon.innerHTML = '<path d="M21 12.8A8.5 8.5 0 1 1 11.2 3a6.6 6.6 0 0 0 9.8 9.8Z"/>';
-      } else {
-        icon.innerHTML = '<circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5 5l1.7 1.7M17.3 17.3 19 19M19 5l-1.7 1.7M6.7 17.3 5 19"/>';
+    /* 关于我 · 个人简介（可多段） */
+    intro: [
+      '你好，我是 <b>XX</b>，一名对技术与设计充满热情的创作者。我相信好的产品源于对细节的执着，享受把复杂问题拆解成简洁优雅的解决方案。',
+      '工作之外，我喜欢探索新事物、记录生活、打磨自己的小项目。期待与有趣的你相遇。'
+    ],
+
+    /* 关于我 · 技能标签（可增删） */
+    skills: ['Vue', 'React', 'TypeScript', 'UI 设计', 'Node.js', '剪辑', '摄影', 'AI 工具'],
+
+    /* 关于我 · 经历履历（可增删） */
+    timeline: [
+      { date: '20XX.XX — 至今', title: 'XX · 职业', desc: '负责 XX 相关工作，主导多个项目的落地与交付。' },
+      { date: '20XX.XX — 20XX.XX', title: 'XX 经历', desc: '参与 XX，积累了 XX 方面的实践经验。' },
+      { date: '20XX.XX', title: 'XX 教育经历', desc: '就读于 XX，主修 XX 专业。' }
+    ],
+
+    /* ======================================================================
+     * 项目作品（可增删；全部清空时页面显示空状态）
+     * 字段：name 名称 / desc 简介 / tech 技术栈标签 / time 上线时间
+     *       cover 封面图URL（留空显示占位）/ cat 分类
+     *       github 仓库链接 / demo 在线预览链接 / detail 详情补充说明
+     * ==================================================================== */
+    projects: [
+      {
+        name: 'XX',
+        desc: '项目简介待补充，用一两句话说明这个项目做了什么、解决了什么问题。',
+        tech: ['XX', 'XX'],
+        time: '20XX.XX',
+        cover: '',
+        cat: 'XX',
+        github: '#',
+        demo: '#',
+        detail: '项目详情补充说明：背景、方案与成果（可在此扩展多段文字）。'
+      },
+      {
+        name: 'XX',
+        desc: '项目简介待补充，用一两句话说明这个项目做了什么、解决了什么问题。',
+        tech: ['XX', 'XX'],
+        time: '20XX.XX',
+        cover: '',
+        cat: 'XX',
+        github: '#',
+        demo: '#',
+        detail: '项目详情补充说明：背景、方案与成果（可在此扩展多段文字）。'
+      },
+      {
+        name: 'XX',
+        desc: '项目简介待补充，用一两句话说明这个项目做了什么、解决了什么问题。',
+        tech: ['XX', 'XX'],
+        time: '20XX.XX',
+        cover: '',
+        cat: 'XX',
+        github: '#',
+        demo: '#',
+        detail: '项目详情补充说明：背景、方案与成果（可在此扩展多段文字）。'
       }
+    ],
+
+    /* ======================================================================
+     * 联系方式（图标 + 文字，地址统一 XX 占位）
+     * type 决定图标与复制行为：link=跳转链接 / copy=点击复制
+     * ==================================================================== */
+    contacts: [
+      { name: 'GitHub',   value: 'XX',     type: 'link', href: 'https://github.com/',      ico: 'GH' },
+      { name: 'Gitee',    value: 'XX',     type: 'link', href: 'https://gitee.com/',        ico: 'GE' },
+      { name: '小红书',    value: 'XX',     type: 'link', href: 'https://www.xiaohongshu.com/', ico: '红' },
+      { name: '邮箱',      value: 'XX',     type: 'copy', ico: '✉' },
+      { name: '微信',      value: 'XX',     type: 'copy', ico: '微' }
+    ],
+
+    /* 页脚 */
+    footer: {
+      year: '20XX',                // 版权年份
+      name: 'XX',                  // 版权署名
+      tech: '原生 HTML / CSS / JavaScript'
     }
-    document.querySelectorAll('.theme-opt').forEach(function (opt) {
-      opt.classList.toggle('sel', opt.getAttribute('data-theme') === pref);
+  };
+
+  /* ==========================================================================
+   * 工具函数
+   * ======================================================================== */
+  function $(id) { return document.getElementById(id); }
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
     });
   }
+  function toast(text) {
+    var t = $('toast'), txt = $('toastText');
+    txt.textContent = text;
+    t.classList.add('show');
+    clearTimeout(toast._timer);
+    toast._timer = setTimeout(function () { t.classList.remove('show'); }, 2200);
+  }
 
-  function initTheme() {
-    var saved = localStorage.getItem(THEME_KEY) || 'system';
-    applyTheme(saved);
+  /* ==========================================================================
+   * 1. 渲染文案（从 SITE 写入页面）
+   * ======================================================================== */
+  function renderText() {
+    $('brandMark').textContent = SITE.brand.slice(0, 2);
+    $('brandName').textContent = SITE.brand;
+    document.title = SITE.name + ' 的个人主页 · Portfolio';
 
-    var btn = document.getElementById('themeBtn');
-    var pop = document.getElementById('themePop');
-    if (btn && pop) {
-      btn.addEventListener('click', function (e) {
-        e.stopPropagation();
-        pop.classList.toggle('open');
-      });
-      pop.querySelectorAll('.theme-opt').forEach(function (opt) {
-        opt.addEventListener('click', function () {
-          var pref = opt.getAttribute('data-theme');
-          localStorage.setItem(THEME_KEY, pref);
-          applyTheme(pref);
-          pop.classList.remove('open');
-        });
-      });
-      document.addEventListener('click', function (e) {
-        if (!pop.contains(e.target)) pop.classList.remove('open');
-      });
+    $('heroBadge').textContent = SITE.hero.badge;
+    $('heroTitle').textContent = SITE.hero.title;
+    $('heroSub').textContent = SITE.hero.sub;
+    $('heroMotto').textContent = SITE.hero.motto;
+
+    $('infoName').textContent = SITE.name;
+    $('infoName2').textContent = SITE.name;
+    $('infoAge').textContent = SITE.basic.age;
+    $('infoLoc').textContent = SITE.basic.location;
+    $('infoCareer').textContent = SITE.basic.career;
+
+    /* 头像：有 URL 懒加载，无则显示占位 */
+    var avatarImg = $('avatarImg');
+    if (SITE.avatar) {
+      avatarImg.dataset.src = SITE.avatar;
+      avatarImg.alt = SITE.name + ' 的头像';
+      $('avatarWrap').querySelector('.ph').style.display = 'none';
     }
-    // 跟随系统时响应系统主题变化
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () {
-      if ((localStorage.getItem(THEME_KEY) || 'system') === 'system') applyTheme('system');
-    });
+
+    /* 简介段落 */
+    $('aboutIntro').innerHTML = SITE.intro.map(function (p) {
+      return '<p class="para">' + p + '</p>';
+    }).join('');
+
+    /* 技能标签 */
+    $('skillCloud').innerHTML = SITE.skills.map(function (s) {
+      return '<span class="skill-item">' + esc(s) + '</span>';
+    }).join('');
+
+    /* 时间轴 */
+    $('timeline').innerHTML = SITE.timeline.map(function (t) {
+      return '<div class="tl-item">' +
+        '<div class="tl-date">' + esc(t.date) + '</div>' +
+        '<div class="tl-title">' + esc(t.title) + '</div>' +
+        '<div class="tl-desc">' + esc(t.desc) + '</div>' +
+        '</div>';
+    }).join('');
+
+    /* 页脚 */
+    $('footerYear').textContent = SITE.footer.year;
+    $('footerName').textContent = SITE.footer.name;
+    $('icpSlot').style.display = SITE.footer.icp ? 'block' : 'none';
+    if (SITE.footer.icp) $('icpSlot').textContent = SITE.footer.icp;
   }
 
-  /* ========================================================================
-   * 3. 移动端导航
+  /* ==========================================================================
+   * 2. 项目作品渲染 + 筛选 + 空状态
    * ======================================================================== */
-  function initNav() {
-    var toggle = document.getElementById('navToggle');
-    var links = document.getElementById('navLinks');
-    if (!toggle || !links) return;
-    toggle.addEventListener('click', function () {
-      links.classList.toggle('open');
-    });
-    links.querySelectorAll('a').forEach(function (a) {
-      a.addEventListener('click', function () {
-        links.classList.remove('open');
-      });
-    });
-  }
-
-  /* ========================================================================
-   * 4. 项目卡片渲染与筛选
-   * ======================================================================== */
-  function cardHTML(p) {
-    var statusClass = p.ok === false ? 'warn' : '';
-    return (
-      '<article class="card">' +
-      '  <div class="card-top">' +
-      '    <span class="card-ico">' + p.icon + '</span>' +
-      '    <h3 class="card-name">' + p.name + '</h3>' +
-      '  </div>' +
-      '  <p class="card-desc">' + p.desc + '</p>' +
-      '  <div class="card-meta">' + p.tags.map(function (t) { return '<span class="pill pill-tech">' + t + '</span>'; }).join('') + '</div>' +
-      '  <div class="card-foot">' +
-      '    <div class="card-stat">' +
-      '      <span>分类<b>' + p.cat + '</b></span>' +
-      '      <span>状态<b class="status ' + statusClass + '">' + p.status + '</b></span>' +
-      '    </div>' +
-      '    <a class="card-link" href="' + p.href + '" target="_blank" rel="noopener">详情 →</a>' +
-      '  </div>' +
-      '</article>'
-    );
-  }
-
-  function renderFeatured() {
-    var grid = document.getElementById('featuredGrid');
-    if (!grid) return;
-    grid.innerHTML = PROJECTS.filter(function (p) { return p.featured; }).slice(0, 3).map(cardHTML).join('');
+  function cardHTML(p, i) {
+    var cover = p.cover
+      ? '<img data-src="' + esc(p.cover) + '" alt="' + esc(p.name) + '" loading="lazy" />'
+      : '<div class="ph">XX<small>封面占位</small></div>';
+    return '<article class="card" data-index="' + i + '" role="button" tabindex="0" aria-label="查看作品 ' + esc(p.name) + ' 详情">' +
+      '<div class="card-cover">' + cover + '</div>' +
+      '<div class="card-body">' +
+      '<h3>' + esc(p.name) + '</h3>' +
+      '<p class="desc">' + esc(p.desc) + '</p>' +
+      '<div class="card-tags">' + p.tech.map(function (t) { return '<span class="tag-pill">' + esc(t) + '</span>'; }).join('') + '</div>' +
+      '<div class="card-foot">' +
+      '<span class="card-time">' + esc(p.time) + '</span>' +
+      '<span class="card-more">详情 →</span>' +
+      '</div>' +
+      '</div>' +
+      '</article>';
   }
 
   function renderProjects() {
-    var grid = document.getElementById('projectGrid');
-    var bar = document.getElementById('filterBar');
-    var count = document.getElementById('projectCount');
-    var empty = document.getElementById('emptyState');
-    var input = document.getElementById('searchInput');
-    if (!grid) return;
+    var grid = $('cardGrid');
+    var bar = $('filterBar');
+    var empty = $('emptyState');
+    var projects = SITE.projects;
 
+    /* 分类：全部 + 去重分类 */
     var cats = ['全部'].concat(
-      PROJECTS.map(function (p) { return p.cat; }).filter(function (c, i, arr) { return arr.indexOf(c) === i; })
+      projects.map(function (p) { return p.cat; }).filter(function (c, i, arr) { return c && arr.indexOf(c) === i; })
     );
+    bar.innerHTML = cats.map(function (c, i) {
+      return '<button class="chip' + (i === 0 ? ' sel' : '') + '" data-cat="' + esc(c) + '">' + esc(c) + '</button>';
+    }).join('');
 
-    if (bar) {
-      bar.innerHTML = cats.map(function (c, i) {
-        return '<button class="chip' + (i === 0 ? ' sel' : '') + '" data-cat="' + c + '">' + c + '</button>';
-      }).join('');
-    }
-
-    var state = { cat: '全部', kw: '' };
+    var state = { cat: '全部' };
 
     function update() {
-      var kw = state.kw.trim().toLowerCase();
-      var list = PROJECTS.filter(function (p) {
-        var okCat = state.cat === '全部' || p.cat === state.cat;
-        var okKw = !kw ||
-          p.name.toLowerCase().indexOf(kw) !== -1 ||
-          p.desc.toLowerCase().indexOf(kw) !== -1 ||
-          p.tags.join(' ').toLowerCase().indexOf(kw) !== -1 ||
-          p.cat.toLowerCase().indexOf(kw) !== -1;
-        return okCat && okKw;
+      var list = projects.filter(function (p) {
+        return state.cat === '全部' || p.cat === state.cat;
       });
-      grid.innerHTML = list.map(cardHTML).join('');
-      if (count) count.innerHTML = '共 <b>' + list.length + '</b> 个项目';
-      if (empty) empty.classList.toggle('show', list.length === 0);
+      if (list.length === 0) {
+        grid.innerHTML = '';
+        empty.classList.add('show');
+      } else {
+        empty.classList.remove('show');
+        grid.innerHTML = list.map(function (p, i) {
+          /* 用原数组索引定位详情数据 */
+          return cardHTML(p, projects.indexOf(p));
+        }).join('');
+        bindCardEvents();
+      }
     }
 
-    if (bar) bar.addEventListener('click', function (e) {
+    bar.addEventListener('click', function (e) {
       var chip = e.target.closest('.chip');
       if (!chip) return;
       bar.querySelectorAll('.chip').forEach(function (c) { c.classList.remove('sel'); });
@@ -259,54 +246,192 @@
       update();
     });
 
-    if (input) input.addEventListener('input', function () {
-      state.kw = input.value;
-      update();
-    });
-
     update();
   }
 
-  /* ---------- 技能标签（关于页） ---------- */
-  function renderSkills() {
-    var cloud = document.getElementById('skillCloud');
-    if (!cloud) return;
-    cloud.innerHTML = SKILLS.map(function (s) { return '<span class="skill-item">' + s + '</span>'; }).join('');
+  /* ==========================================================================
+   * 3. 作品详情弹窗
+   * ======================================================================== */
+  function openModal(i) {
+    var p = SITE.projects[i];
+    if (!p) return;
+    $('modalCover').innerHTML = p.cover
+      ? '<img src="' + esc(p.cover) + '" alt="' + esc(p.name) + '" />'
+      : '<span class="ph">XX</span>';
+    $('modalTitle').textContent = p.name;
+    $('modalTime').textContent = p.time ? '上线时间 · ' + p.time : '';
+    $('modalDesc').textContent = p.detail || p.desc;
+    $('modalTags').innerHTML = p.tech.map(function (t) { return '<span class="tag-pill">' + esc(t) + '</span>'; }).join('');
+    var actions = '';
+    if (p.github && p.github !== '#') actions += '<a class="btn btn-sm btn-ghost" href="' + esc(p.github) + '" target="_blank" rel="noopener">GitHub ↗</a>';
+    if (p.demo && p.demo !== '#') actions += '<a class="btn btn-sm btn-primary" href="' + esc(p.demo) + '" target="_blank" rel="noopener">在线预览 ↗</a>';
+    $('modalActions').innerHTML = actions || '<span style="color:var(--text-2);font-size:0.9rem;">链接待补充</span>';
+    $('modalMask').classList.add('open');
+    document.body.style.overflow = 'hidden';
   }
 
-  /* ========================================================================
-   * 5. 联系表单：前端校验 + 模拟提交
-   * ======================================================================== */
-  function initForm() {
-    var form = document.getElementById('contactForm');
-    if (!form) return;
-    var msg = document.getElementById('formMsg');
+  function closeModal() {
+    $('modalMask').classList.remove('open');
+    document.body.style.overflow = '';
+  }
 
-    function show(type, text) {
-      msg.className = 'form-msg ' + type;
-      msg.textContent = text;
-    }
-
-    form.addEventListener('submit', function (e) {
-      e.preventDefault();
-      var name = form.name.value.trim();
-      var email = form.email.value.trim();
-      var text = form.message.value.trim();
-      var agree = form.agree ? form.agree.checked : document.getElementById('fAgree').checked;
-
-      if (!name) return show('err', '请填写你的称呼。');
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return show('err', '邮箱格式不正确，请检查后重试。');
-      if (!text) return show('err', '留言内容不能为空。');
-      if (!agree) return show('err', '请先勾选同意隐私说明。');
-
-      show('ok', '已收到你的留言，我会尽快回复你！');
-      form.reset();
-      setTimeout(function () { msg.className = 'form-msg'; }, 6000);
+  function bindCardEvents() {
+    document.querySelectorAll('.card').forEach(function (card) {
+      card.addEventListener('click', function () { openModal(Number(card.dataset.index)); });
+      card.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModal(Number(card.dataset.index)); }
+      });
     });
   }
 
-  /* ========================================================================
-   * 6. 滚动入场动画
+  $('modalClose').addEventListener('click', closeModal);
+  $('modalMask').addEventListener('click', function (e) { if (e.target === $('modalMask')) closeModal(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeModal(); });
+
+  /* ==========================================================================
+   * 4. 联系方式 + 一键复制
+   * ======================================================================== */
+  function renderContacts() {
+    $('contactGrid').innerHTML = SITE.contacts.map(function (c) {
+      var attrs = c.type === 'link'
+        ? 'href="' + esc(c.href) + '" target="_blank" rel="noopener"'
+        : 'href="javascript:void(0)" data-copy="' + esc(c.value) + '"';
+      var tip = c.type === 'copy' ? '<span class="copy-tip">点击复制</span>' : '';
+      return '<a class="contact-item" ' + attrs + '>' +
+        tip +
+        '<span class="ci-ico">' + esc(c.ico) + '</span>' +
+        '<b>' + esc(c.name) + '</b>' +
+        '<span>' + esc(c.value) + '</span>' +
+        '</a>';
+    }).join('');
+
+    /* 复制逻辑 */
+    document.querySelectorAll('[data-copy]').forEach(function (el) {
+      el.addEventListener('click', function () {
+        var val = el.getAttribute('data-copy');
+        if (!val || val === 'XX') { toast('请先在配置中填写 ' + el.querySelector('b').textContent + ' 地址'); return; }
+        function done() { toast('已复制 ' + el.querySelector('b').textContent + '：' + val); }
+        if (navigator.clipboard && window.isSecureContext) {
+          navigator.clipboard.writeText(val).then(done).catch(function () { fallbackCopy(val, done); });
+        } else {
+          fallbackCopy(val, done);
+        }
+      });
+    });
+  }
+
+  function fallbackCopy(text, done) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0;';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); } catch (e) { /* ignore */ }
+    document.body.removeChild(ta);
+    done();
+  }
+
+  /* ==========================================================================
+   * 5. 留言板（轻量模拟，接入后端时替换 submit 逻辑）
+   * ======================================================================== */
+  function initGuestForm() {
+    var form = $('guestForm');
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var name = $('gbName').value.trim();
+      var msg = $('gbMsg').value.trim();
+      var email = $('gbEmail').value.trim();
+      if (!name) { toast('请填写你的称呼'); return; }
+      if (!msg) { toast('留言内容不能为空'); return; }
+      if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { toast('邮箱格式不正确'); return; }
+      toast('留言已收到，感谢你的反馈！');
+      form.reset();
+    });
+  }
+
+  /* ==========================================================================
+   * 6. 主题切换（浅色 / 深色，localStorage 持久化，默认深空黑）
+   * ======================================================================== */
+  var THEME_KEY = 'ps-theme';
+
+  function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    var icon = $('themeIcon');
+    if (theme === 'light') {
+      icon.innerHTML = '<path d="M21 12.8A8.5 8.5 0 1 1 11.2 3a6.6 6.6 0 0 0 9.8 9.8Z"/>';
+    } else {
+      icon.innerHTML = '<circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5 5l1.7 1.7M17.3 17.3 19 19M19 5l-1.7 1.7M6.7 17.3 5 19"/>';
+    }
+  }
+
+  function initTheme() {
+    var saved = localStorage.getItem(THEME_KEY) || 'dark';
+    applyTheme(saved);
+    $('themeBtn').addEventListener('click', function () {
+      var next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      localStorage.setItem(THEME_KEY, next);
+      applyTheme(next);
+    });
+  }
+
+  /* ==========================================================================
+   * 7. 导航：吸顶 / 汉堡菜单 / 滚动高亮（scrollspy）
+   * ======================================================================== */
+  function initNav() {
+    var header = $('siteHeader');
+    var toggle = $('navToggle');
+    var links = $('navLinks');
+
+    toggle.addEventListener('click', function () {
+      links.classList.toggle('open');
+    });
+    links.querySelectorAll('a').forEach(function (a) {
+      a.addEventListener('click', function () { links.classList.remove('open'); });
+    });
+
+    /* 吸顶加深 + 返回顶部显隐 + Hero 视差 */
+    var backTop = $('backTop');
+    var heroInner = document.querySelector('.hero-inner');
+    var ticking = false;
+
+    window.addEventListener('scroll', function () {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function () {
+        var y = window.scrollY;
+        header.classList.toggle('scrolled', y > 10);
+        backTop.classList.toggle('show', y > 500);
+        if (heroInner && y < window.innerHeight) {
+          heroInner.style.transform = 'translateY(' + y * 0.16 + 'px)';
+          heroInner.style.opacity = String(Math.max(0, 1 - y / (window.innerHeight * 0.72)));
+        }
+        ticking = false;
+      });
+    });
+
+    backTop.addEventListener('click', function () {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    /* scrollspy：滚动高亮当前板块导航 */
+    var sections = ['top', 'about', 'projects', 'contact'].map(function (id) {
+      return document.getElementById(id);
+    });
+    var navAnchors = links.querySelectorAll('a');
+    window.addEventListener('scroll', function () {
+      var pos = window.scrollY + 140;
+      var current = 'top';
+      sections.forEach(function (sec) {
+        if (sec && sec.offsetTop <= pos) current = sec.id;
+      });
+      navAnchors.forEach(function (a) {
+        a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+      });
+    }, { passive: true });
+  }
+
+  /* ==========================================================================
+   * 8. 入场动画 + 图片懒加载
    * ======================================================================== */
   function initReveal() {
     var els = document.querySelectorAll('.reveal');
@@ -316,21 +441,47 @@
     }
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (en) {
-        if (en.isIntersecting) {
-          en.target.classList.add('in');
-          io.unobserve(en.target);
-        }
+        if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); }
       });
-    }, { threshold: 0.08 });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
     els.forEach(function (el) { io.observe(el); });
   }
 
-  /* ---------- 启动 ---------- */
+  function initLazy() {
+    var imgs = document.querySelectorAll('img[data-src]');
+    if (!('IntersectionObserver' in window)) {
+      imgs.forEach(function (img) {
+        img.src = img.dataset.src;
+        img.classList.add('loaded');
+      });
+      return;
+    }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        var img = en.target;
+        img.src = img.dataset.src;
+        img.addEventListener('load', function () { img.classList.add('loaded'); });
+        img.addEventListener('error', function () {
+          img.style.display = 'none';
+          var ph = img.parentElement.querySelector('.ph');
+          if (ph) ph.style.display = 'grid';
+        });
+        io.unobserve(img);
+      });
+    }, { rootMargin: '200px 0px' });
+    imgs.forEach(function (img) { io.observe(img); });
+  }
+
+  /* ==========================================================================
+   * 启动
+   * ======================================================================== */
+  renderText();
+  renderProjects();
+  renderContacts();
+  initGuestForm();
   initTheme();
   initNav();
-  renderFeatured();
-  renderProjects();
-  renderSkills();
-  initForm();
   initReveal();
+  initLazy();
 })();
