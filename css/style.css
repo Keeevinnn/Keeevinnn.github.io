@@ -12,13 +12,15 @@ html[data-theme="dark"] {
   --card-2: #26262a;
   --text: #f5f5f7;
   --text-2: #86868b;
-  --accent: #8b7cf6;             /* 低饱和靛紫 */
-  --accent-2: #a78bfa;           /* 渐变辅助色 */
-  --accent-soft: rgba(139, 124, 246, 0.16);
+  --accent: #2997ff;             /* 苹果蓝 · 仅细节点缀 */
+  --accent-2: #64b5ff;           /* 渐变辅助（极淡氛围） */
+  --accent-soft: rgba(41, 151, 255, 0.14);
   --border: rgba(255, 255, 255, 0.12);
   --border-soft: rgba(255, 255, 255, 0.07);
-  --glow-1: rgba(139, 124, 246, 0.13);
-  --glow-2: rgba(167, 139, 250, 0.09);
+  --glow-1: rgba(41, 151, 255, 0.09);
+  --glow-2: rgba(100, 181, 255, 0.05);
+  --btn-bg: #f5f5f7;             /* 苹果式白色主按钮 */
+  --btn-fg: #1d1d1f;
   --shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
   --shadow-hover: 0 24px 60px rgba(0, 0, 0, 0.55);
   --nav-bg: rgba(16, 16, 20, 0.66);
@@ -36,13 +38,15 @@ html[data-theme="light"] {
   --card-2: #f0f0f2;
   --text: #1d1d1f;
   --text-2: #6e6e73;
-  --accent: #6559d9;             /* 低饱和靛紫 */
-  --accent-2: #8b7cf6;
-  --accent-soft: rgba(101, 89, 217, 0.12);
+  --accent: #0071e3;             /* 苹果蓝 · 仅细节点缀 */
+  --accent-2: #2997ff;
+  --accent-soft: rgba(0, 113, 227, 0.10);
   --border: rgba(0, 0, 0, 0.10);
   --border-soft: rgba(0, 0, 0, 0.06);
-  --glow-1: rgba(101, 89, 217, 0.09);
-  --glow-2: rgba(139, 124, 246, 0.06);
+  --glow-1: rgba(0, 113, 227, 0.07);
+  --glow-2: rgba(41, 151, 255, 0.04);
+  --btn-bg: #1d1d1f;             /* 苹果式黑色主按钮 */
+  --btn-fg: #ffffff;
   --shadow: 0 12px 40px rgba(0, 0, 0, 0.10);
   --shadow-hover: 0 24px 60px rgba(0, 0, 0, 0.16);
   --nav-bg: rgba(245, 245, 247, 0.6);
@@ -137,14 +141,14 @@ button { font-family: inherit; cursor: pointer; }
 .brand-mark {
   width: 26px; height: 26px;
   border-radius: 8px;
-  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  background: var(--card-2);
+  border: 1px solid var(--border);
   display: grid;
   place-items: center;
-  color: #fff;
+  color: var(--text);
   font-size: 0.82rem;
   font-weight: 700;
   flex: none;
-  box-shadow: 0 4px 12px var(--accent-soft);
 }
 .nav-links {
   display: flex;
@@ -159,7 +163,7 @@ button { font-family: inherit; cursor: pointer; }
   font-size: 0.92rem;
   transition: color 0.2s, background 0.2s;
 }
-.nav-links a:hover { color: var(--text); background: var(--border-soft); text-decoration: none; }
+.nav-links a:hover { color: var(--accent); background: var(--border-soft); text-decoration: none; }
 .nav-links a.active {
   color: var(--accent);
   background: var(--accent-soft);
@@ -301,11 +305,11 @@ button { font-family: inherit; cursor: pointer; }
 .btn:hover { transform: translateY(-2px) scale(1.02); box-shadow: var(--shadow); text-decoration: none; }
 .btn:active { transform: translateY(0) scale(0.97); transition-duration: 0.08s; }
 .btn-primary {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: #fff;
+  background: var(--btn-bg);
+  border-color: var(--btn-bg);
+  color: var(--btn-fg);
 }
-.btn-primary:hover { box-shadow: 0 10px 30px var(--accent-soft); background: color-mix(in srgb, var(--accent) 88%, #fff); }
+.btn-primary:hover { filter: brightness(0.94); box-shadow: var(--shadow); }
 .btn-ghost { background: transparent; }
 .btn-ghost:hover { background: var(--border-soft); }
 .btn-sm { padding: 0.55rem 1.3rem; font-size: 0.9rem; }
@@ -363,10 +367,11 @@ button { font-family: inherit; cursor: pointer; }
   margin: 0 auto 1.2rem;
   border-radius: 50%;
   overflow: hidden;
-  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  background: var(--card-2);
+  border: 1px solid var(--border);
   display: grid;
   place-items: center;
-  color: #fff;
+  color: var(--text);
   font-size: 2rem;
   font-weight: 700;
   position: relative;
@@ -412,11 +417,11 @@ button { font-family: inherit; cursor: pointer; }
   cursor: default;
 }
 .skill-item:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-  background: var(--accent-soft);
+  border-color: var(--text-2);
+  color: var(--text);
+  background: var(--border-soft);
   transform: translateY(-3px);
-  box-shadow: 0 8px 20px var(--accent-soft);
+  box-shadow: var(--shadow);
 }
 
 .timeline { margin-top: 2.8rem; }
@@ -453,13 +458,13 @@ button { font-family: inherit; cursor: pointer; }
   font-size: 0.9rem;
   transition: all 0.2s;
 }
-.chip:hover { color: var(--text); border-color: var(--accent); transform: translateY(-1px); }
+.chip:hover { color: var(--text); border-color: var(--text-2); transform: translateY(-1px); }
 .chip.sel {
-  background: var(--accent-soft);
-  border-color: var(--accent);
-  color: var(--accent);
+  background: var(--text);
+  border-color: var(--text);
+  color: var(--bg);
   font-weight: 600;
-  box-shadow: 0 0 0 3px var(--accent-soft), 0 6px 18px var(--accent-soft);
+  box-shadow: 0 0 0 3px var(--border-soft), 0 6px 18px rgba(0, 0, 0, 0.18);
   transform: none;
 }
 
@@ -482,9 +487,9 @@ button { font-family: inherit; cursor: pointer; }
 .card:hover {
   transform: translateY(-6px);
   box-shadow: var(--shadow-hover);
-  border-color: color-mix(in srgb, var(--accent) 42%, var(--border));
+  border-color: var(--border);
 }
-.card:hover .card-cover { background: linear-gradient(135deg, var(--accent-soft), var(--bg-elev)); }
+.card:hover .card-cover { background: linear-gradient(135deg, var(--border-soft), var(--bg-elev)); }
 .card-cover {
   aspect-ratio: 16 / 10;
   position: relative;
@@ -527,8 +532,9 @@ button { font-family: inherit; cursor: pointer; }
   padding: 0.2rem 0.7rem;
   border-radius: 999px;
   font-size: 0.76rem;
-  background: var(--accent-soft);
-  color: var(--accent);
+  background: var(--border-soft);
+  border: 1px solid var(--border-soft);
+  color: var(--text-2);
   font-weight: 550;
 }
 .card-foot {
@@ -639,13 +645,14 @@ button { font-family: inherit; cursor: pointer; }
   display: block;
   position: relative;
 }
-.contact-item:hover { transform: translateY(-4px); box-shadow: var(--shadow-hover); border-color: var(--accent); text-decoration: none; }
+.contact-item:hover { transform: translateY(-4px); box-shadow: var(--shadow-hover); border-color: var(--border); text-decoration: none; }
 .contact-item .ci-ico {
   width: 46px; height: 46px;
   margin: 0 auto 0.9rem;
   border-radius: 14px;
-  background: var(--accent-soft);
-  color: var(--accent);
+  background: var(--border-soft);
+  border: 1px solid var(--border-soft);
+  color: var(--text);
   display: grid;
   place-items: center;
   font-size: 1.25rem;
@@ -656,7 +663,7 @@ button { font-family: inherit; cursor: pointer; }
   position: absolute;
   top: 0.6rem; right: 0.8rem;
   font-size: 0.7rem;
-  color: var(--accent);
+  color: var(--text-2);
   opacity: 0;
   transition: opacity 0.2s;
 }
