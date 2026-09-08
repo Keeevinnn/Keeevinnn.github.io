@@ -375,45 +375,81 @@
   }
 
   /* ==========================================================================
-   * 7. 导航：吸顶 / 汉堡菜单 / 滚动高亮（scrollspy）
+   * 7. 导航：吸顶 / 汉堡菜单 / 丝滑滚动 / 视差惯性跟随 / 滚动高亮
    * ======================================================================== */
   function initNav() {
     var header = $('siteHeader');
     var toggle = $('navToggle');
     var links = $('navLinks');
+    var backTop = $('backTop');
+    var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    /* ---- 丝滑平滑滚动：easeInOutCubic 缓动，接管全部锚点跳转 ---- */
+    function smoothScrollTo(targetY, duration) {
+      if (reduced) { window.scrollTo(0, targetY); return; }
+      var startY = window.scrollY;
+      var diff = targetY - startY;
+      if (Math.abs(diff) < 1) return;
+      var t0 = performance.now();
+      function easeInOutCubic(t) {
+        return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+      }
+      function step(now) {
+        var p = Math.min(1, (now - t0) / duration);
+        window.scrollTo(0, startY + diff * easeInOutCubic(p));
+        if (p < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
 
     toggle.addEventListener('click', function () {
       links.classList.toggle('open');
     });
-    links.querySelectorAll('a').forEach(function (a) {
-      a.addEventListener('click', function () { links.classList.remove('open'); });
-    });
 
-    /* 吸顶加深 + 返回顶部显隐 + Hero 视差 */
-    var backTop = $('backTop');
-    var heroInner = document.querySelector('.hero-inner');
-    var ticking = false;
-
-    window.addEventListener('scroll', function () {
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(function () {
-        var y = window.scrollY;
-        header.classList.toggle('scrolled', y > 10);
-        backTop.classList.toggle('show', y > 500);
-        if (heroInner && y < window.innerHeight) {
-          heroInner.style.transform = 'translateY(' + y * 0.16 + 'px)';
-          heroInner.style.opacity = String(Math.max(0, 1 - y / (window.innerHeight * 0.72)));
-        }
-        ticking = false;
+    document.querySelectorAll('a[href^="#"]').forEach(function (a) {
+      a.addEventListener('click', function (e) {
+        var id = a.getAttribute('href');
+        var target = document.querySelector(id);
+        if (!target) return;
+        e.preventDefault();
+        links.classList.remove('open');
+        var y = (id === '#top' || target === document.body) ? 0 : target.getBoundingClientRect().top + window.scrollY - 64;
+        smoothScrollTo(Math.max(0, y), 900);
+        history.replaceState(null, '', id);
       });
     });
 
-    backTop.addEventListener('click', function () {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
+    backTop.addEventListener('click', function () { smoothScrollTo(0, 800); });
 
-    /* scrollspy：滚动高亮当前板块导航 */
+    /* ---- Hero 视差：惯性跟随（lerp 缓动，丝滑不跳变） ---- */
+    var heroInner = document.querySelector('.hero-inner');
+    var paraTarget = 0, paraCurrent = 0, paraRunning = false;
+    function paraLoop() {
+      paraCurrent += (paraTarget - paraCurrent) * 0.09;
+      if (Math.abs(paraTarget - paraCurrent) < 0.05 && window.scrollY === 0) {
+        heroInner.style.transform = 'none';
+        heroInner.style.opacity = '1';
+        paraRunning = false;
+        return;
+      }
+      heroInner.style.transform = 'translateY(' + paraCurrent.toFixed(2) + 'px)';
+      heroInner.style.opacity = String(Math.max(0, 1 - window.scrollY / (window.innerHeight * 0.8)));
+      requestAnimationFrame(paraLoop);
+    }
+    window.addEventListener('scroll', function () {
+      var y = Math.min(window.scrollY, window.innerHeight);
+      paraTarget = y * 0.18;
+      if (!paraRunning) { paraRunning = true; requestAnimationFrame(paraLoop); }
+    }, { passive: true });
+
+    /* ---- 吸顶加深 + 返回顶部显隐 ---- */
+    window.addEventListener('scroll', function () {
+      var y = window.scrollY;
+      header.classList.toggle('scrolled', y > 10);
+      backTop.classList.toggle('show', y > 500);
+    }, { passive: true });
+
+    /* ---- scrollspy：滚动高亮当前板块导航 ---- */
     var sections = ['top', 'about', 'projects', 'contact'].map(function (id) {
       return document.getElementById(id);
     });
