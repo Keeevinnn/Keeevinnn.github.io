@@ -12,13 +12,13 @@ html[data-theme="dark"] {
   --card-2: #26262a;
   --text: #f5f5f7;
   --text-2: #86868b;
-  --accent: #2997ff;             /* 苹果蓝 · 仅细节点缀 */
-  --accent-2: #64b5ff;           /* 渐变辅助（极淡氛围） */
-  --accent-soft: rgba(41, 151, 255, 0.14);
+  --accent: #f5f5f7;             /* 中性强调（纯白，无彩色） */
+  --accent-2: #a1a1a6;
+  --accent-soft: rgba(255, 255, 255, 0.12);
   --border: rgba(255, 255, 255, 0.12);
   --border-soft: rgba(255, 255, 255, 0.07);
-  --glow-1: rgba(41, 151, 255, 0.09);
-  --glow-2: rgba(100, 181, 255, 0.05);
+  --glow-1: rgba(245, 245, 247, 0.055);
+  --glow-2: rgba(161, 161, 166, 0.035);
   --btn-bg: #f5f5f7;             /* 苹果式白色主按钮 */
   --btn-fg: #1d1d1f;
   --shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
@@ -38,13 +38,13 @@ html[data-theme="light"] {
   --card-2: #f0f0f2;
   --text: #1d1d1f;
   --text-2: #6e6e73;
-  --accent: #0071e3;             /* 苹果蓝 · 仅细节点缀 */
-  --accent-2: #2997ff;
-  --accent-soft: rgba(0, 113, 227, 0.10);
+  --accent: #1d1d1f;             /* 中性强调（纯黑，无彩色） */
+  --accent-2: #6e6e73;
+  --accent-soft: rgba(0, 0, 0, 0.09);
   --border: rgba(0, 0, 0, 0.10);
   --border-soft: rgba(0, 0, 0, 0.06);
-  --glow-1: rgba(0, 113, 227, 0.07);
-  --glow-2: rgba(41, 151, 255, 0.04);
+  --glow-1: rgba(29, 29, 31, 0.05);
+  --glow-2: rgba(110, 110, 115, 0.03);
   --btn-bg: #1d1d1f;             /* 苹果式黑色主按钮 */
   --btn-fg: #ffffff;
   --shadow: 0 12px 40px rgba(0, 0, 0, 0.10);
@@ -68,7 +68,7 @@ body {
 img { max-width: 100%; display: block; }
 a { color: var(--accent); text-decoration: none; }
 button { font-family: inherit; cursor: pointer; }
-::selection { background: var(--accent); color: #fff; }
+::selection { background: var(--text-2); color: var(--bg); }
 :focus-visible {
   outline: none;
   box-shadow: 0 0 0 3px var(--accent-soft), 0 0 0 1.5px var(--accent);
@@ -83,7 +83,7 @@ button { font-family: inherit; cursor: pointer; }
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--text-2);
   margin-bottom: 1rem;
 }
 .section-head h2 {
@@ -91,6 +91,15 @@ button { font-family: inherit; cursor: pointer; }
   font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1.15;
+}
+/* 标题下渐变短装饰线 */
+.section-head h2::after {
+  content: "";
+  display: block;
+  width: 52px;
+  height: 1.5px;
+  margin: 1rem auto 0;
+  background: linear-gradient(90deg, transparent, var(--text-2), transparent);
 }
 .section-head p { margin-top: 1rem; color: var(--text-2); font-size: 1.06rem; }
 
@@ -210,6 +219,21 @@ button { font-family: inherit; cursor: pointer; }
   background-size: auto, auto, 56px 56px, 56px 56px;
   mask-image: radial-gradient(ellipse 75% 70% at 50% 40%, #000 30%, transparent 78%);
   -webkit-mask-image: radial-gradient(ellipse 75% 70% at 50% 40%, #000 30%, transparent 78%);
+  pointer-events: none;
+}
+/* 设计线条：同心圆环 + 水平贯穿线 */
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 44%, transparent 23.2%, var(--border-soft) 23.55%, transparent 24%),
+    radial-gradient(circle at 50% 44%, transparent 37.2%, var(--border-soft) 37.55%, transparent 38%),
+    radial-gradient(circle at 50% 44%, transparent 53.2%, var(--border-soft) 53.55%, transparent 54.2%),
+    linear-gradient(180deg, transparent calc(50% - 0.5px), var(--border-soft) calc(50% - 0.5px), var(--border-soft) calc(50% + 0.5px), transparent calc(50% + 0.5px));
+  mask-image: radial-gradient(ellipse 85% 80% at 50% 46%, #000 20%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse 85% 80% at 50% 46%, #000 20%, transparent 75%);
+  opacity: 0.8;
   pointer-events: none;
 }
 /* 极简粒子（CSS 动画，不卡顿） */
@@ -483,7 +507,34 @@ button { font-family: inherit; cursor: pointer; }
   transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s;
   cursor: pointer;
   text-align: left;
+  position: relative;
 }
+/* 卡片角标线（左上 L + 右下 L，设计感装饰） */
+.card::before,
+.card::after {
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  z-index: 3;
+  pointer-events: none;
+  opacity: 0.55;
+  transition: opacity 0.3s;
+}
+.card::before {
+  top: 14px; left: 14px;
+  border-top: 1.5px solid var(--text-2);
+  border-left: 1.5px solid var(--text-2);
+  border-top-left-radius: 6px;
+}
+.card::after {
+  bottom: 14px; right: 14px;
+  border-bottom: 1.5px solid var(--text-2);
+  border-right: 1.5px solid var(--text-2);
+  border-bottom-right-radius: 6px;
+}
+.card:hover::before,
+.card:hover::after { opacity: 1; }
 .card:hover {
   transform: translateY(-6px);
   box-shadow: var(--shadow-hover);
@@ -545,7 +596,27 @@ button { font-family: inherit; cursor: pointer; }
   border-top: 1px dashed var(--border);
 }
 .card-time { color: var(--text-2); font-size: 0.83rem; }
-.card-more { color: var(--accent); font-size: 0.88rem; font-weight: 550; }
+.card-more {
+  color: var(--text);
+  font-size: 0.88rem;
+  font-weight: 550;
+  position: relative;
+  display: inline-block;
+}
+/* 下划线从左展开动画 */
+.card-more::after {
+  content: "";
+  position: absolute;
+  left: 0; bottom: -3px;
+  width: 100%;
+  height: 1px;
+  background: var(--text-2);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.card:hover .card-more::after { transform: scaleX(1); }
+.card-more:hover { color: var(--text); }
 
 /* 空状态 */
 .empty {
@@ -719,8 +790,19 @@ button { font-family: inherit; cursor: pointer; }
   font-size: 0.86rem;
 }
 .footer-links { display: flex; gap: 1.3rem; }
-.footer-links a { color: var(--text-2); }
+.footer-links a { color: var(--text-2); position: relative; padding-bottom: 2px; }
+.footer-links a::after {
+  content: "";
+  position: absolute;
+  left: 0; bottom: 0;
+  width: 100%; height: 1px;
+  background: var(--text-2);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
 .footer-links a:hover { color: var(--text); }
+.footer-links a:hover::after { transform: scaleX(1); }
 .footer-extra { width: 100%; text-align: center; font-size: 0.78rem; opacity: 0.7; margin-top: 0.6rem; }
 
 /* ==========================================================================
