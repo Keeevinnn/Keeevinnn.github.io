@@ -4,793 +4,511 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>青游 · 青岛旅行路线规划</title>
-<meta name="description" content="选择青岛的居住酒店，自由挑选旅游路线，详细地图标注全部景点。">
-<link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Serif+SC:wght@600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
-<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.js" integrity="sha384-u5N8qJeJOO2iqNjIKTdl6KeKsEikMAmCUBPc6sC6uGpgL34aPJ4VgNhuhumedpEk" crossorigin="anonymous"></script>
 <style>
 :root{
-  --ink:#1C2B33;
-  --ink-soft:#5B6E78;
-  --deep:#0E3A5C;
-  --deep-2:#0B2E49;
-  --sea:#1B6CA8;
-  --sea-2:#2E8FC1;
-  --sand:#F4EFE6;
-  --sand-2:#EAE1D0;
-  --brick:#C4553B;
-  --gold:#E0A458;
-  --card:#FFFFFF;
-  --line:#DDE6E5;
-  --shadow:0 10px 30px rgba(14,58,92,.10);
-  --radius:18px;
+  --ink:#14232f; --sea:#1B6CA8; --gold:#C9A227; --cream:#FAF6EF; --card:#ffffff;
+  --line:#E7DfD2; --muted:#6B7A86; --orange:#D35400; --purple:#8E44AD;
+  --green:#27AE60; --teal:#16A085; --navy:#2C3E50;
 }
-*{margin:0;padding:0;box-sizing:border-box;}
-html{scroll-behavior:smooth;}
-body{
-  font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif;
-  color:var(--ink);
-  background:var(--sand);
-  line-height:1.6;
-  -webkit-font-smoothing:antialiased;
-}
-h1,h2,h3,.serif{font-family:'Noto Serif SC','Songti SC',serif;}
-img{display:block;max-width:100%;}
-a{color:inherit;text-decoration:none;}
-
-/* ===== 顶部导航 ===== */
-.nav{
-  position:fixed;top:0;left:0;right:0;z-index:1000;
-  display:flex;align-items:center;justify-content:space-between;
-  padding:14px 5vw;
-  background:rgba(11,46,73,.92);
-  backdrop-filter:blur(8px);
-  color:#EAF3F7;
-}
-.nav-brand{display:flex;align-items:center;gap:10px;font-family:'Noto Serif SC',serif;font-weight:700;font-size:19px;letter-spacing:.06em;}
-.nav-brand svg{width:26px;height:26px;}
-.nav-links{display:flex;gap:26px;font-size:14px;color:#C7DCE6;}
-.nav-links a{transition:color .2s;}
-.nav-links a:hover{color:#fff;}
-
-/* ===== Hero ===== */
-.hero{
-  position:relative;
-  min-height:86vh;
-  display:flex;align-items:center;
-  background:
-    linear-gradient(120deg, rgba(11,46,73,.82) 0%, rgba(14,58,92,.45) 45%, rgba(14,58,92,.18) 100%),
-    url('https://aka.doubaocdn.com/s/WYwGjlKzvv') center/cover no-repeat;
-  color:#F2F8FA;
-  padding:120px 5vw 96px;
-}
-.hero-inner{max-width:1080px;margin:0 auto;width:100%;}
-.hero-kicker{
-  display:inline-flex;align-items:center;gap:10px;
-  font-size:13px;letter-spacing:.32em;font-weight:500;color:#FFD9A0;
-  text-transform:uppercase;margin-bottom:22px;
-}
-.hero-kicker::before{content:"";width:44px;height:1px;background:var(--gold);}
-.hero h1{
-  font-size:clamp(40px,6.4vw,76px);
-  line-height:1.12;font-weight:900;letter-spacing:.02em;
-  max-width:16em;
-}
-.hero h1 em{font-style:normal;color:#FFD9A0;}
-.hero-sub{
-  margin-top:24px;max-width:560px;font-size:clamp(15px,1.6vw,18px);
-  color:#D8E8EF;font-weight:300;line-height:1.9;
-}
-.hero-stats{display:flex;gap:0;margin-top:44px;flex-wrap:wrap;}
-.hero-stat{padding:0 34px;border-left:1px solid rgba(255,255,255,.22);}
-.hero-stat:first-child{border-left:none;padding-left:0;}
-.hero-stat b{display:block;font-family:'Noto Serif SC',serif;font-size:34px;font-weight:700;color:#fff;}
-.hero-stat span{font-size:13px;color:#B9D2DE;letter-spacing:.08em;}
-.hero-cta{
-  display:inline-flex;align-items:center;gap:10px;margin-top:48px;
-  background:var(--gold);color:#2A1C08;
-  font-weight:700;font-size:16px;padding:15px 34px;border-radius:999px;
-  transition:transform .2s, box-shadow .2s;
-  box-shadow:0 8px 24px rgba(224,164,88,.35);
-}
-.hero-cta:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(224,164,88,.45);}
-.wave{
-  display:block;width:100%;height:52px;
-  position:absolute;bottom:-1px;left:0;right:0;
-  color:var(--sand);
-}
-
-/* ===== 通用章节 ===== */
-.section{padding:88px 5vw 40px;max-width:1200px;margin:0 auto;}
-.sec-head{margin-bottom:40px;}
-.sec-step{display:flex;align-items:center;gap:14px;margin-bottom:10px;}
-.sec-step .num{
-  font-family:'Noto Serif SC',serif;font-size:15px;font-weight:700;
-  color:var(--brick);background:rgba(196,85,59,.1);
-  border:1px solid rgba(196,85,59,.3);
-  padding:4px 12px;border-radius:999px;letter-spacing:.1em;
-}
-.sec-step h2{font-size:clamp(26px,3.4vw,38px);font-weight:900;letter-spacing:.02em;}
-.sec-sub{color:var(--ink-soft);font-size:15px;margin-top:8px;}
-
-/* ===== 酒店区 ===== */
-.hotel-toolbar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:26px;}
-.hotel-search{
-  flex:1 1 260px;max-width:420px;display:flex;align-items:center;gap:10px;
-  background:#fff;border:1px solid var(--line);border-radius:999px;
-  padding:10px 18px;
-}
-.hotel-search svg{width:17px;height:17px;stroke:var(--ink-soft);flex:none;}
-.hotel-search input{
-  border:none;outline:none;font-size:14px;font-family:inherit;width:100%;color:var(--ink);background:transparent;
-}
-.hotel-search input::placeholder{color:#9AA9B0;}
-.hotel-tabs{display:flex;flex-wrap:wrap;gap:10px;}
-.tab{
-  border:1px solid var(--line);background:#fff;color:var(--ink-soft);
-  padding:8px 18px;border-radius:999px;font-size:14px;cursor:pointer;
-  transition:all .2s;
-}
-.tab:hover{border-color:var(--sea);color:var(--sea);}
-.tab.active{background:var(--deep);border-color:var(--deep);color:#fff;font-weight:500;}
-.hotel-count{font-size:13px;color:var(--ink-soft);margin-bottom:16px;}
-.hotel-count b{color:var(--brick);}
-.hotel-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px;}
-.hotel-card{
-  background:var(--card);border:2px solid var(--line);border-radius:var(--radius);
-  padding:24px 24px 20px;cursor:pointer;position:relative;
-  transition:transform .22s, box-shadow .22s, border-color .22s;
-}
-.hotel-card:hover{transform:translateY(-4px);box-shadow:var(--shadow);border-color:#BFD5DC;}
-.hotel-card.selected{border-color:var(--sea);box-shadow:0 14px 34px rgba(27,108,168,.18);}
-.hotel-card .mark{
-  position:absolute;top:16px;right:16px;
-  width:26px;height:26px;border-radius:50%;
-  border:2px solid var(--line);display:flex;align-items:center;justify-content:center;
-  color:#fff;font-size:13px;
-}
-.hotel-card.selected .mark{background:var(--sea);border-color:var(--sea);}
-.hotel-card h3{font-size:19px;font-weight:700;letter-spacing:.01em;padding-right:30px;}
-.hotel-card .tags{display:flex;gap:8px;margin:12px 0 10px;flex-wrap:wrap;}
-.chip{font-size:12px;padding:3px 11px;border-radius:999px;letter-spacing:.04em;}
-.chip.area{background:#EAF3F7;color:#175E8C;}
-.chip.level{background:#FBF0DF;color:#9A6212;}
-.hotel-card .price{margin-top:6px;font-size:14px;color:var(--ink-soft);}
-.hotel-card .price b{color:var(--brick);font-size:16px;font-family:'Noto Serif SC',serif;}
-.hotel-card .note{
-  margin-top:10px;font-size:13.5px;color:var(--ink-soft);line-height:1.7;
-  border-top:1px dashed var(--line);padding-top:10px;
-}
-.empty-hint{background:#fff;border:2px dashed var(--line);border-radius:var(--radius);padding:36px 24px;text-align:center;color:var(--ink-soft);font-size:14px;}
-
-/* ===== 路线区 ===== */
-.route-area-head{margin-bottom:14px;}
-.route-area-head p{color:var(--ink-soft);font-size:14px;}
-.route-area-head p b{color:var(--deep);}
-.route-group{margin-bottom:38px;}
-.route-group-title{
-  display:flex;align-items:center;gap:12px;margin-bottom:18px;
-  font-family:'Noto Serif SC',serif;font-size:20px;font-weight:700;color:var(--deep);
-}
-.route-group-title::after{content:"";flex:1;height:1px;background:var(--sand-2);}
-.route-group-title .rg-desc{font-family:'Noto Sans SC',sans-serif;font-size:12.5px;color:var(--ink-soft);font-weight:400;}
-.route-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;}
-.route-card{
-  background:var(--card);border:2px solid var(--line);border-radius:var(--radius);
-  padding:26px 24px;cursor:pointer;position:relative;overflow:hidden;
-  transition:transform .22s, box-shadow .22s, border-color .22s;
-}
-.route-card::before{
-  content:"";position:absolute;top:0;left:0;right:0;height:4px;
-  background:linear-gradient(90deg,var(--sea),var(--sea-2),var(--gold));
-  opacity:0;transition:opacity .22s;
-}
-.route-card:hover{transform:translateY(-4px);box-shadow:var(--shadow);}
-.route-card.selected{border-color:var(--sea);}
-.route-card.selected::before{opacity:1;}
-.route-card .r-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
-.route-card h3{font-size:20px;font-weight:700;}
-.route-card .theme{font-size:12px;color:var(--brick);letter-spacing:.06em;margin-top:2px;}
-.route-card .meta{display:flex;gap:14px;margin:14px 0;font-size:13px;color:var(--ink-soft);flex-wrap:wrap;}
-.route-card .meta span{display:inline-flex;align-items:center;gap:6px;}
-.route-card .meta svg{width:14px;height:14px;stroke:var(--sea);}
-.route-spots{display:flex;flex-wrap:wrap;gap:6px;}
-.spot-chip{
-  font-size:12px;background:var(--sand);border:1px solid var(--sand-2);
-  padding:3px 10px;border-radius:8px;color:var(--ink);letter-spacing:.02em;
-}
-.spot-chip b{color:var(--sea);font-family:'Noto Serif SC',serif;margin-right:3px;}
-
-/* ===== 地图 + 行程 ===== */
-.mapwrap{max-width:1200px;margin:0 auto;padding:10px 5vw 60px;}
-.map-panel{
-  background:linear-gradient(160deg,#0B2E49 0%,#0E3A5C 55%,#124E77 100%);
-  border-radius:26px;overflow:hidden;
-  box-shadow:0 20px 50px rgba(11,46,73,.35);
-  display:grid;grid-template-columns:1.55fr 1fr;min-height:640px;
-}
-.map-head{
-  grid-column:1 / -1;display:flex;align-items:center;justify-content:space-between;
-  padding:20px 26px;color:#DCEAF1;flex-wrap:wrap;gap:10px;
-}
-.map-head .title{display:flex;align-items:center;gap:12px;font-family:'Noto Serif SC',serif;font-size:20px;font-weight:700;}
-.map-head .title svg{width:22px;height:22px;stroke:var(--gold);}
-.map-head .status{font-size:13px;color:#9FC3D6;}
-.map-head .status b{color:#FFD9A0;font-weight:600;}
-#map{height:560px;width:100%;background:#B7D2DE;}
-.leaflet-container{font-family:inherit;}
-.leaflet-popup-content-wrapper{border-radius:12px;box-shadow:0 8px 26px rgba(11,46,73,.25);}
-.leaflet-popup-content{margin:14px 16px;line-height:1.6;}
-.leaflet-popup-content .p-name{font-family:'Noto Serif SC',serif;font-size:15px;font-weight:700;color:var(--deep);}
-.leaflet-popup-content .p-meta{font-size:12px;color:var(--brick);margin:3px 0 6px;}
-.leaflet-popup-content .p-desc{font-size:12.5px;color:var(--ink-soft);max-width:230px;}
-.route-num{
-  background:#1B6CA8;color:#fff;font-size:12px;font-weight:700;
-  padding:2px 9px;border:2px solid #fff;border-radius:999px;
-  box-shadow:0 2px 6px rgba(11,46,73,.35);
-}
-.leaflet-tooltip.route-num{background:#1B6CA8;border:none;color:#fff;}
-.hotel-pin-wrap{background:none;border:none;}
-.hotel-pin{
-  position:relative;width:30px;height:30px;border-radius:50% 50% 50% 0;
-  background:#F2C14E;border:2.5px solid #fff;
-  transform:rotate(-45deg);
-  box-shadow:0 3px 10px rgba(11,46,73,.45);
-}
-.hotel-pin::after{
-  content:"";position:absolute;left:50%;top:50%;width:10px;height:10px;
-  background:#0B2E49;border-radius:50%;
-  transform:translate(-50%,-50%);
-}
-.hotel-pin.sel{background:#FF9E4D;}
-.hotel-pin-label{
-  position:absolute;left:50%;top:100%;transform:translateX(-50%) rotate(0deg);
-  margin-top:4px;white-space:nowrap;
-  font-size:11px;font-weight:600;color:#0B2E49;
-  background:rgba(255,255,255,.92);padding:2px 8px;border-radius:999px;
-  box-shadow:0 1px 6px rgba(11,46,73,.25);
-}
-.map-side{
-  border-left:1px solid rgba(255,255,255,.10);
-  background:rgba(255,255,255,.04);
-  display:flex;flex-direction:column;min-height:0;
-}
-.itin-head{padding:18px 22px 14px;border-bottom:1px solid rgba(255,255,255,.10);color:#EAF3F7;}
-.itin-head .rname{font-family:'Noto Serif SC',serif;font-size:19px;font-weight:700;}
-.itin-head .rsum{margin-top:4px;font-size:13px;color:#9FC3D6;}
-.itin-list{overflow-y:auto;flex:1;padding:8px 14px 20px;}
-.itin-item{display:flex;gap:14px;padding:14px 10px;border-radius:12px;cursor:pointer;transition:background .2s;}
-.itin-item:hover{background:rgba(255,255,255,.07);}
-.itin-item .idx{
-  flex:none;width:28px;height:28px;border-radius:50%;
-  background:rgba(224,164,88,.18);border:1px solid rgba(224,164,88,.5);
-  color:#FFD9A0;font-family:'Noto Serif SC',serif;font-size:13px;font-weight:700;
-  display:flex;align-items:center;justify-content:center;margin-top:2px;
-}
-.itin-item .body{min-width:0;}
-.itin-item .nm{font-weight:600;font-size:15.5px;color:#F2F8FA;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
-.itin-item .nm .mini{font-size:11.5px;color:#9FC3D6;font-weight:400;background:rgba(255,255,255,.08);padding:1px 8px;border-radius:999px;}
-.itin-item .ds{font-size:12.5px;color:#A9C4D2;margin-top:5px;line-height:1.75;}
-.itin-empty{padding:40px 24px;text-align:center;color:#8FB3C6;font-size:14px;line-height:2;}
-
-/* ===== 页脚 ===== */
-.footer{
-  background:var(--deep-2);color:#9DB7C6;
-  padding:48px 5vw 40px;text-align:center;font-size:13px;
-  margin-top:40px;line-height:2;
-}
-.footer b{color:#EAF3F7;font-family:'Noto Serif SC',serif;}
-.footer .note{opacity:.75;font-size:12px;}
-
-/* ===== 响应式 ===== */
-@media (max-width:900px){
-  .map-panel{grid-template-columns:1fr;}
-  .map-side{border-left:none;border-top:1px solid rgba(255,255,255,.10);min-height:420px;}
-  #map{height:440px;}
-  .hero{min-height:72vh;padding:100px 6vw 80px;}
-}
-@media (max-width:768px){
-  .nav{padding:12px 4vw;}
-  .nav-links{gap:16px;font-size:13px;}
-  .section{padding:64px 5vw 28px;}
-  .hero-stats{gap:16px;}
-  .hero-stat{padding:0 18px;}
-  .hero-stat b{font-size:26px;}
-  .mapwrap{padding:6px 4vw 40px;}
-  .map-panel{min-height:0;border-radius:20px;}
-  .itin-list{max-height:460px;}
-}
-@media (max-width:480px){
-  .hotel-grid{grid-template-columns:1fr;}
-  .route-grid{grid-template-columns:1fr;}
-  .nav-links span.hide-sm{display:none;}
-  .itin-item .ds{font-size:12px;}
-}
-@media (prefers-reduced-motion:reduce){
-  *{transition:none!important;animation:none!important;}
-  html{scroll-behavior:auto;}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;background:var(--cream);color:var(--ink);line-height:1.6}
+img{max-width:100%;display:block}
+.wrap{max-width:1200px;margin:0 auto;padding:0 20px}
+/* ---------- 导航 ---------- */
+.nav{position:fixed;top:0;left:0;right:0;z-index:999;background:rgba(20,35,47,.92);backdrop-filter:blur(8px);color:#fff}
+.nav .wrap{display:flex;align-items:center;gap:26px;height:56px}
+.brand{font-weight:800;font-size:19px;letter-spacing:1px;color:#fff;text-decoration:none}
+.brand span{color:var(--gold)}
+.nav a{color:#dbe4ea;text-decoration:none;font-size:14px}
+.nav a:hover{color:#fff}
+.nav .sp{flex:1}
+/* ---------- Hero ---------- */
+.hero{position:relative;min-height:520px;display:flex;align-items:center;justify-content:center;text-align:center;color:#fff;margin-top:56px;
+  background:linear-gradient(180deg,rgba(12,32,46,.55),rgba(12,32,46,.35)),url('https://aka.doubaocdn.com/s/WYwGjlKzvv') center/cover no-repeat}
+.hero .inner{padding:70px 20px}
+.hero .eyebrow{letter-spacing:6px;font-size:13px;color:#ffd97a;text-transform:uppercase}
+.hero h1{font-size:44px;font-weight:800;margin:14px 0 10px;text-shadow:0 2px 14px rgba(0,0,0,.35)}
+.hero p{font-size:16px;max-width:640px;margin:0 auto;opacity:.95}
+.hero .stats{display:flex;justify-content:center;gap:56px;margin-top:34px}
+.hero .stats b{display:block;font-size:30px;color:#ffd97a}
+.hero .stats span{font-size:13px;opacity:.9}
+.hero .cta{display:inline-block;margin-top:34px;background:var(--gold);color:#14232f;font-weight:700;padding:12px 36px;border-radius:999px;text-decoration:none;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+/* ---------- 通用 section ---------- */
+.section{padding:64px 0}
+.section .hd{display:flex;align-items:baseline;gap:14px;margin-bottom:8px}
+.section .hd .no{font-size:34px;font-weight:800;color:var(--gold)}
+.section .hd h2{font-size:26px;font-weight:800}
+.section .sub{color:var(--muted);font-size:14px;margin-bottom:26px}
+/* ---------- 酒店区 ---------- */
+.hotel-filter{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px}
+.hotel-filter .search{flex:1;min-width:220px;max-width:380px;position:relative}
+.hotel-filter .search input{width:100%;padding:10px 38px 10px 14px;border:1.5px solid var(--line);border-radius:999px;font-size:14px;background:#fff;outline:none}
+.hotel-filter .search input:focus{border-color:var(--sea)}
+.hotel-filter .search .ic{position:absolute;right:13px;top:50%;transform:translateY(-50%);color:var(--muted)}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.tab{padding:7px 16px;border-radius:999px;border:1.5px solid var(--line);background:#fff;font-size:13px;cursor:pointer;color:var(--ink);transition:all .18s}
+.tab:hover{border-color:var(--sea);color:var(--sea)}
+.tab.on{background:var(--sea);border-color:var(--sea);color:#fff;font-weight:600}
+.tab .n{font-size:11px;opacity:.7;margin-left:3px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.chip{padding:5px 14px;border-radius:999px;border:1.5px solid var(--line);background:#fff;font-size:12px;cursor:pointer;color:var(--muted)}
+.chip.on{background:var(--gold);border-color:var(--gold);color:#14232f;font-weight:600}
+.hotel-count{font-size:13px;color:var(--muted);margin-bottom:14px}
+.hotel-count b{color:var(--sea)}
+.hotel-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:16px}
+.hotel-card{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:16px;cursor:pointer;transition:all .18s;position:relative}
+.hotel-card:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(20,35,47,.1);border-color:var(--sea)}
+.hotel-card.selected{border-color:var(--sea);box-shadow:0 0 0 2px rgba(27,108,168,.25)}
+.hotel-card .tag{display:inline-block;font-size:11px;padding:2px 9px;border-radius:999px;margin-bottom:8px;color:#fff}
+.tag-lux{background:var(--gold)}.tag-high{background:var(--sea)}.tag-comf{background:var(--teal)}.tag-eco{background:var(--muted)}
+.hotel-card h3{font-size:16px;margin-bottom:4px}
+.hotel-card .meta{font-size:12px;color:var(--muted);margin-bottom:6px}
+.hotel-card .price{font-size:13px;color:var(--orange);font-weight:700;margin-bottom:8px}
+.hotel-card .desc{font-size:13px;color:#4a5a66}
+.hotel-card .pin{position:absolute;top:12px;right:12px;width:10px;height:10px;border-radius:50%}
+.more-btn{display:block;margin:18px auto 0;padding:10px 30px;border-radius:999px;border:1.5px solid var(--sea);background:#fff;color:var(--sea);font-size:14px;cursor:pointer;font-weight:600}
+.more-btn:hover{background:var(--sea);color:#fff}
+.hotel-hidden{display:none}
+/* ---------- 路线区 ---------- */
+.route-tabs{margin-bottom:18px}
+.route-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:18px}
+.route-card{background:var(--card);border:1.5px solid var(--line);border-radius:16px;overflow:hidden;cursor:pointer;transition:all .18s;display:flex;flex-direction:column;position:relative}
+.route-card:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(20,35,47,.1)}
+.route-card.selected{border-color:var(--sea);box-shadow:0 0 0 2px rgba(27,108,168,.25)}
+.route-card .cover{height:132px;background-size:cover;background-position:center;position:relative}
+.route-card .cover .g{position:absolute;left:10px;top:10px;background:rgba(20,35,47,.78);color:#fff;font-size:11px;padding:3px 10px;border-radius:999px}
+.route-card .cover .dur{position:absolute;right:10px;bottom:8px;background:rgba(255,255,255,.92);color:var(--ink);font-size:12px;padding:2px 10px;border-radius:999px;font-weight:600}
+.route-card .bd{padding:14px 16px 16px;flex:1;display:flex;flex-direction:column}
+.route-card h3{font-size:16px;margin-bottom:2px}
+.route-card .sub{font-size:12px;color:var(--muted);margin-bottom:10px}
+.route-card .ft{display:flex;gap:14px;font-size:12px;color:var(--muted);margin-top:auto}
+.route-card .ft i{font-style:normal}
+.route-card .ck{position:absolute;right:12px;top:12px;width:24px;height:24px;border-radius:50%;background:var(--sea);color:#fff;display:none;align-items:center;justify-content:center;font-size:13px;font-weight:800}
+.route-card.selected .ck{display:flex}
+/* ---------- 地图区 ---------- */
+.mapsec{background:#14232f;color:#fff}
+.mapsec .hd h2{color:#fff}
+.mapsec .sub{color:#9fb2c0}
+.mapsec .sub b{color:#ffd97a}
+.map-layout{display:grid;grid-template-columns:7fr 5fr;gap:18px;margin-top:6px}
+#map{height:640px;border-radius:16px;z-index:1;background:#dfe7ec}
+.itinerary{background:#1c3142;border:1px solid #2b4a63;border-radius:16px;padding:16px;max-height:640px;overflow-y:auto}
+.itin-empty{color:#8ba1b2;font-size:13px;text-align:center;padding:60px 10px;line-height:2}
+.itin-head{margin-bottom:12px}
+.itin-head h3{font-size:17px;color:#ffd97a;margin-bottom:4px}
+.itin-head .meta{font-size:12px;color:#9fb2c0}
+.itin-item{display:flex;gap:12px;background:#243c50;border-radius:12px;padding:10px;margin-bottom:10px}
+.itin-item .idx{width:26px;height:26px;border-radius:50%;background:var(--gold);color:#14232f;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.itin-item img{width:96px;height:72px;object-fit:cover;border-radius:8px;flex-shrink:0}
+.itin-item .tx{flex:1;min-width:0}
+.itin-item .nm{font-size:14px;font-weight:700;color:#fff;display:flex;align-items:center;gap:8px}
+.itin-item .nm .t{font-size:11px;color:#9fb2c0;font-weight:400}
+.itin-item .f{font-size:11px;color:#ffd97a;margin:2px 0 4px}
+.itin-item .d{font-size:12px;color:#c3d2dd;line-height:1.5}
+.itin-item .tip{font-size:11px;color:#8fd3a7;margin-top:4px}
+.itin-item .tip::before{content:'💡 '}
+/* ---------- 弹窗 ---------- */
+.leaflet-popup-content{font-size:13px;line-height:1.5;min-width:200px}
+.sp-pop img{width:220px;height:120px;object-fit:cover;border-radius:8px;margin-bottom:8px}
+.sp-pop .nm{font-weight:800;font-size:15px;margin-bottom:2px}
+.sp-pop .mt{font-size:12px;color:var(--muted);margin-bottom:6px}
+.sp-pop .ds{font-size:12.5px;color:#44545f}
+.hp-pop .nm{font-weight:800;font-size:14px;margin-bottom:2px}
+.hp-pop .mt{font-size:12px;color:var(--muted)}
+.hp-pop .pr{font-size:13px;color:var(--orange);font-weight:700;margin:4px 0}
+.hp-pop .ds{font-size:12.5px;color:#44545f}
+/* ---------- 地图覆盖物 ---------- */
+.route-num{background:#1B6CA8;color:#fff;font-size:12px;font-weight:700;padding:2px 9px;border:2px solid #fff;border-radius:999px;box-shadow:0 2px 6px rgba(11,46,73,.35)}
+.leaflet-tooltip.route-num{background:#1B6CA8;border:none;color:#fff}
+.hotel-pin-wrap{background:none;border:none}
+.hotel-pin{width:20px;height:20px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.35);cursor:pointer}
+.hotel-pin .lab{position:absolute;left:50%;top:calc(100% + 4px);transform:translateX(-50%) rotate(45deg);white-space:nowrap;font-size:10px;color:var(--ink);background:rgba(255,255,255,.92);padding:1px 6px;border-radius:6px;font-weight:600}
+/* ---------- 页脚 ---------- */
+footer{background:#0e1a24;color:#7d93a4;padding:30px 0;font-size:12px;text-align:center}
+/* ---------- 响应式 ---------- */
+@media(max-width:900px){
+  .map-layout{grid-template-columns:1fr}
+  #map{height:480px}
+  .hero h1{font-size:32px}
+  .hero .stats{gap:30px}
 }
 </style>
 </head>
 <body>
 
-<header class="nav">
-  <div class="nav-brand">
-    <svg viewBox="0 0 24 24" fill="none" stroke="#FFD9A0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c-3.2 2.6-5 5-5 8a5 5 0 0 0 10 0c0-3-1.8-5.4-5-8Z"/><path d="M4.5 16.5 3 21h18l-1.5-4.5"/><path d="M9 12.5c1.5 1 4.5 1 6 0"/></svg>
-    青游
-  </div>
-  <nav class="nav-links">
+<nav class="nav">
+  <div class="wrap">
+    <a class="brand" href="#top">青<span>游</span></a>
     <a href="#hotels">选酒店</a>
     <a href="#routes">挑路线</a>
-    <a href="#mapArea" class="hide-sm">看地图</a>
-  </nav>
-</header>
-
-<section class="hero">
-  <div class="hero-inner">
-    <div class="hero-kicker">Qingdao · 山海之间的红瓦之城</div>
-    <h1>住下来，<em>再决定怎么玩</em></h1>
-    <p class="hero-sub">挑一家合心意的酒店，再自由搭配一条顺路的路线——红瓦老城、碧海沙滩与海上仙山，地图上标得明明白白。</p>
-    <div class="hero-stats">
-      <div class="hero-stat"><b>22</b><span>精选景点</span></div>
-      <div class="hero-stat"><b>20</b><span>覆盖酒店</span></div>
-      <div class="hero-stat"><b>15</b><span>推荐路线</span></div>
-    </div>
-    <a class="hero-cta" href="#hotels">
-      开始规划
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-    </a>
+    <a href="#mapArea">看地图</a>
+    <div class="sp"></div>
   </div>
-  <svg class="wave" viewBox="0 0 1440 56" preserveAspectRatio="none" fill="currentColor"><path d="M0,30 C180,52 360,8 540,24 C720,40 900,10 1080,22 C1260,34 1350,40 1440,28 L1440,56 L0,56 Z"/></svg>
+</nav>
+
+<section class="hero" id="top">
+  <div class="inner">
+    <div class="eyebrow">QINGDAO · 山海之间的红瓦之城</div>
+    <h1>住下来，再决定怎么玩</h1>
+    <p>从 132 家酒店里挑一处合心意的住处，再自由搭配 24 条顺路的路线——红瓦老城、碧海沙滩与海上仙山，地图上标得明明白白。</p>
+    <div class="stats">
+      <div><b>45</b><span>精选景点</span></div>
+      <div><b>132</b><span>覆盖酒店</span></div>
+      <div><b>24</b><span>推荐路线</span></div>
+    </div>
+    <a class="cta" href="#hotels">开始规划</a>
+  </div>
 </section>
 
-<main>
-  <!-- ===== 第一步：选酒店 ===== -->
-  <section class="section" id="hotels">
-    <div class="sec-head">
-      <div class="sec-step"><span class="num">01</span><h2>选一家合心意的住处</h2></div>
-      <p class="sec-sub">酒店只负责决定你住哪、从哪出发——路线完全由你自由挑选，互不绑定。</p>
+<!-- ============ 酒店 ============ -->
+<section class="section" id="hotels">
+  <div class="wrap">
+    <div class="hd"><div class="no">01</div><h2>选一家合心意的住处</h2></div>
+    <div class="sub">按片区、档次筛选或直接搜索。酒店只决定你住哪、从哪出发——路线完全由你自由挑选，互不绑定。</div>
+
+    <div class="hotel-filter">
+      <div class="search">
+        <input id="hotelSearch" type="search" placeholder="搜索酒店名称、区域或关键词，如「海景」「机场」「亲子」">
+        <span class="ic">🔍</span>
+      </div>
     </div>
-    <div class="hotel-toolbar">
-      <label class="hotel-search">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.8-3.8"/></svg>
-        <input id="hotelSearch" type="search" placeholder="搜索酒店名称、区域或关键词，如「海景」「崂山」" autocomplete="off">
-      </label>
-      <div class="hotel-tabs" id="hotelTabs"></div>
-    </div>
+    <div class="tabs" id="areaTabs"></div>
+    <div class="chips" id="tierChips"></div>
     <div class="hotel-count" id="hotelCount"></div>
     <div class="hotel-grid" id="hotelGrid"></div>
-  </section>
+    <button class="more-btn" id="moreBtn" style="display:none">展开更多</button>
+  </div>
+</section>
 
-  <!-- ===== 第二步：挑路线 ===== -->
-  <section class="section" id="routes">
-    <div class="sec-head">
-      <div class="sec-step"><span class="num">02</span><h2>挑一条顺路的路线</h2></div>
-      <p class="sec-sub">全部路线独立可选，从你的酒店出发连线，或直接看路线本身。</p>
-    </div>
-    <div id="routeArea"></div>
-  </section>
-</main>
+<!-- ============ 路线 ============ -->
+<section class="section" id="routes" style="background:#fff">
+  <div class="wrap">
+    <div class="hd"><div class="no">02</div><h2>挑一条顺路的路线</h2></div>
+    <div class="sub">24 条路线按主题分成 7 组，每条都附详细行程与实拍插图。任选一条，将从你的酒店出发在地图上连线。</div>
+    <div class="tabs route-tabs" id="routeTabs"></div>
+    <div class="route-grid" id="routeGrid"></div>
+  </div>
+</section>
 
-<!-- ===== 第三步：地图 ===== -->
-<div class="mapwrap" id="mapArea">
-  <div class="map-panel">
-    <div class="map-head">
-      <div class="title">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-5.1-7-11a7 7 0 0 1 14 0c0 5.9-7 11-7 11Z"/><circle cx="12" cy="10" r="2.6"/></svg>
-        青岛旅行地图
-      </div>
-      <div class="status" id="mapStatus">先在上方选择酒店或路线</div>
-    </div>
-    <div id="map"></div>
-    <div class="map-side">
-      <div class="itin-head" id="itinHead">
-        <div class="rname">行程安排</div>
-        <div class="rsum">选择一条路线，这里会按顺序列出每个景点</div>
-      </div>
-      <div class="itin-list" id="itinList">
-        <div class="itin-empty">选择酒店与路线后，<br>地图与行程将同步呈现。</div>
+<!-- ============ 地图 ============ -->
+<section class="section mapsec" id="mapArea">
+  <div class="wrap">
+    <div class="hd"><div class="no">03</div><h2>青岛旅行地图</h2></div>
+    <div class="sub" id="mapStatus">在地图上点选景点查看详情；右上角可切换 <b>高德街道 / 高德卫星 / OSM</b> 底图。</div>
+    <div class="map-layout">
+      <div id="map"></div>
+      <div class="itinerary" id="itinerary">
+        <div class="itin-empty">先在上方选一家酒店<br>再从路线区挑一条线路<br>这里会生成逐站图文行程</div>
       </div>
     </div>
   </div>
-</div>
+</section>
 
-<footer class="footer">
-  <b>青游 · 青岛旅行路线规划</b><br>
-  路线基于公开旅游信息整理，出行前请以景区官方公告为准。<br>
-  <span class="note">酒店价格为参考区间，实际以预订平台为准；地图坐标为标注近似值；地图图层由高德地图 / OpenStreetMap 提供。</span>
-</footer>
+<footer>青游 · 青岛旅行路线规划 &nbsp;|&nbsp; 地图数据 © 高德地图 / OpenStreetMap</footer>
 
+<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.js" integrity="sha384-u5N8qJeJOO2iqNjIKTdl6KeKsEikMAmCUBPc6sC6uGpgL34aPJ4VgNhuhumedpEk" crossorigin="anonymous"></script>
 <script>
-/* ===== 景点数据 ===== */
-const SPOTS = [
-  {id:'zhanqiao',    name:'栈桥',              lng:120.31945,  lat:36.06144,  area:'west',   tag:'城市地标', time:'约1小时',   ticket:'免费',  desc:'青岛的象征，1892年始建的百年栈桥伸入海中，尽头回澜阁可远眺小青岛与海天一色。'},
-  {id:'cathedral',   name:'天主教堂',          lng:120.320588, lat:36.068143, area:'west',   tag:'历史建筑', time:'约30分钟',  ticket:'10元',  desc:'圣弥厄尔主教座堂，哥特式双塔地标。周边浙江路街巷咖啡馆与文创小店密集，拍照出片。'},
-  {id:'governor',    name:'总督府旧址',        lng:120.3286,  lat:36.0634,   area:'west',   tag:'历史建筑', time:'约1小时',   ticket:'20元',  desc:'德国总督楼旧址博物馆，百年德式官邸，是“红瓦绿树”青岛风貌的起点。'},
-  {id:'xinhaoshan',  name:'信号山公园',        lng:120.331561, lat:36.066446, area:'west',   tag:'登高观景', time:'约1小时',   ticket:'15元',  desc:'海拔98米的城市观景台，登顶俯瞰老城红瓦屋顶连绵铺向碧海，日落时分最美。'},
-  {id:'daxuelu',     name:'大学路网红墙',      lng:120.3359,  lat:36.0667,   area:'west',   tag:'文艺打卡', time:'约30分钟',  ticket:'免费',  desc:'大学路与鱼山路转角处的红墙与黄瓦，青岛最出片的文艺地标，周边咖啡馆林立。'},
-  {id:'xiaoyushan',  name:'小鱼山公园',        lng:120.336558, lat:36.058765, area:'west',   tag:'登高观景', time:'约1小时',   ticket:'10元',  desc:'前海一线最佳制高点，览潮阁上可俯瞰第一海水浴场与汇泉湾全貌。'},
-  {id:'luxun',       name:'鲁迅公园',          lng:120.3269,  lat:36.0592,   area:'west',   tag:'滨海公园', time:'约30分钟',  ticket:'免费',  desc:'沿海礁石公园，红礁、碧浪、青松相映，是“琴屿飘灯”观景的起点。'},
-  {id:'undersea',    name:'青岛海底世界',      lng:120.336037, lat:36.057091, area:'west',   tag:'亲子场馆', time:'约2小时',   ticket:'80元',  desc:'全国首家水族馆，梦幻水母宫与海底隧道适合亲子家庭，紧邻第一海水浴场。'},
-  {id:'beach1',      name:'第一海水浴场',      lng:120.3419,  lat:36.0562,   area:'west',   tag:'沙滩戏水', time:'约1小时',   ticket:'免费',  desc:'汇泉湾畔的百年浴场，沙质细软、坡缓浪小，盛夏青岛人最爱的游泳胜地。'},
-  {id:'badaguan',    name:'八大关',            lng:120.350903, lat:36.053625, area:'west',   tag:'万国建筑', time:'约2小时',   ticket:'免费',  desc:'十条以关隘命名的马路，汇集200余栋欧式别墅，“中国最美城区”之一，花石楼与公主楼是代表。'},
-  {id:'beer',        name:'青岛啤酒博物馆',    lng:120.347318, lat:36.079106, area:'shibei', tag:'工业旅游', time:'约1.5小时', ticket:'60元',  desc:'建在百年德式啤酒厂原址上，可亲眼看到啤酒生产线，还能喝到刚下线的新鲜原浆。'},
-  {id:'taidong',     name:'台东步行街',        lng:120.359,   lat:36.086,    area:'shibei', tag:'美食街区', time:'约1.5小时', ticket:'免费',  desc:'青岛烟火气最浓的美食街区，啤酒屋、小吃摊、夜市排档一应俱全，适合夜晚觅食。'},
-  {id:'wusi',        name:'五四广场',          lng:120.386467, lat:36.061589, area:'east',   tag:'城市地标', time:'约1小时',   ticket:'免费',  desc:'青岛新地标，“五月的风”雕塑矗立浮山湾畔，夜晚的灯光秀与海风最是惬意。'},
-  {id:'aofan',       name:'奥帆中心',          lng:120.3905,  lat:36.060279, area:'east',   tag:'帆船码头', time:'约1.5小时', ticket:'免费',  desc:'2008年奥运会帆船赛场，情人坝灯塔与帆船码头是经典机位，可乘帆船出海体验。'},
-  {id:'polar',       name:'青岛极地海洋世界',  lng:120.43753, lat:36.06862,  area:'east',   tag:'亲子场馆', time:'约3小时',   ticket:'200元', desc:'白鲸、企鹅、海豚表演精彩，华东地区人气最高的海洋主题乐园之一。'},
-  {id:'xiaomaidao',  name:'小麦岛公园',        lng:120.426769, lat:36.052548, area:'east',   tag:'滨海公园', time:'约1.5小时', ticket:'免费',  desc:'环海小岛改造的网红公园，草坪、礁石与城市天际线同框，日落时分年轻人云集。'},
-  {id:'shilaoren',   name:'石老人海水浴场',    lng:120.46801, lat:36.09168,  area:'east',   tag:'沙滩戏水', time:'约1.5小时', ticket:'免费',  desc:'崂山前海最长沙滩，“石老人”海蚀柱矗立海中，是青岛最著名的海上日出观赏点。'},
-  {id:'laoshan',     name:'崂山·太清游览区',   lng:120.670827, lat:36.146894, area:'laoshan',tag:'山海仙山', time:'约4小时',   ticket:'90元',  desc:'道教名山太清宫所在，山海相连、古木参天，“海上第一名山”的精华所在。'},
-  {id:'yangkou',     name:'崂山·仰口游览区',   lng:120.647,   lat:36.265,    area:'laoshan',tag:'山海仙山', time:'约3小时',   ticket:'联票',  desc:'觅天洞与太平宫一线，登山观海两相宜，山巅可望仰口海湾全景（与太清为联票）。'},
-  {id:'golden',      name:'金沙滩',            lng:120.245384, lat:35.95739,  area:'coast',  tag:'沙滩戏水', time:'约2小时',   ticket:'免费',  desc:'“亚洲第一滩”，沙细如粉、滩长坡缓，适合玩水、露营与亲子度假。'},
-  {id:'silver',      name:'银沙滩',            lng:120.223,   lat:35.953,    area:'coast',  tag:'沙滩戏水', time:'约1.5小时', ticket:'免费',  desc:'金沙滩以西的安静沙湾，游客更少，沙质同样细腻，适合发呆看海。'},
-  {id:'tangdaowan',  name:'唐岛湾·琴岛之眼',   lng:120.198,   lat:35.946,    area:'coast',  tag:'海湾夜色', time:'约1.5小时', ticket:'免费',  desc:'唐岛湾湿地公园环湾而建，琴岛之眼摩天轮是西海岸夜景地标，黄昏时分最浪漫。'}
-];
-const SPOT_MAP = Object.fromEntries(SPOTS.map(s => [s.id, s]));
+window.__SPOTS__ = [{"id":"栈桥","name":"栈桥","area":"老城西区","lat":36.062,"lng":120.318,"time":"约1小时","fee":"免费","desc":"青岛的象征，1892年始建的百年石桥直伸入海440米，尽头双层八角回澜阁可凭栏远眺。桥身两侧常年有海鸥盘旋，清晨与黄昏的光线最适合拍照。","tip":"清晨人少景美；喂海鸥记得带面包，秋冬海鸥最多。","img":"https://aka.doubaocdn.com/s/9B5WXQJRyy"},{"id":"中山路","name":"中山路","area":"老城西区","lat":36.066,"lng":120.315,"time":"约1小时","fee":"免费","desc":"青岛最早的商业街，欧式老建筑与百年老字号云集，尽头直通栈桥。街道保留了德占时期的街廓肌理，沿街可逛文创店、买青岛特产。","tip":"与劈柴院、天主教堂可连成一条步行线路。","img":"https://aka.doubaocdn.com/s/RWTnr2TXY0"},{"id":"劈柴院","name":"劈柴院","area":"老城西区","lat":36.066,"lng":120.315,"time":"约1小时","fee":"免费","desc":"青岛最老的市井小吃街，名字源于早期劈柴市场。石条路两侧是怀旧招牌与蒸腾热气，锅贴、烤鱿鱼、臭豆腐、海凉粉一应俱全。","tip":"晚上更热闹；肠胃弱的游客建议选热食大店。","img":"https://aka.doubaocdn.com/s/FwKYVf4sjC"},{"id":"天主教堂","name":"天主教堂","area":"老城西区","lat":36.067,"lng":120.318,"time":"约40分钟","fee":"进堂10元","desc":"本名圣弥厄尔教堂，1934年建成的哥特式双塔建筑，是青岛老城的制高点之一。花岗岩立面配红瓦屋顶，在中山路与浙江路一带抬头就能望见。","tip":"教堂前广场是热门婚纱取景地；周日早晨有弥撒。","img":"https://aka.doubaocdn.com/s/OVFzgW8ZyB"},{"id":"总督府旧址","name":"总督府旧址","area":"老城西区","lat":36.064,"lng":120.329,"time":"约1小时","fee":"20元","desc":"德国总督楼旧址，1907年落成的欧式城堡建筑，被称为「石头垒成的欧洲」。内部木质旋梯、彩绘玻璃与德式壁炉保存完好，浓缩了青岛开埠史。","tip":"建议听讲解，建筑细节非常考究。","img":"https://aka.doubaocdn.com/s/VSrB2Q5VV9"},{"id":"信号山公园","name":"信号山公园","area":"老城西区","lat":36.069,"lng":120.332,"time":"约1小时","fee":"15元","desc":"海拔98米的老城观景台，山顶红色球体观景台可360度俯瞰红瓦绿树与海湾。德国人当年在此设立信号台，为进出胶州湾的船只导航。","tip":"傍晚登顶光线最好，可同时看到日落与华灯初上。","img":"https://aka.doubaocdn.com/s/SRnevBVfIU"},{"id":"大学路网红墙","name":"大学路网红墙","area":"老城西区","lat":36.066,"lng":120.327,"time":"约30分钟","fee":"免费","desc":"大学路与鱼山路交界的红墙转角，因朱红院墙与路牌成为青岛最出片的文艺地标。周边咖啡馆、杂货铺与名人故居聚集，适合慢逛。","tip":"早上去人少；红墙配白裙/深色衣服更出片。","img":"https://aka.doubaocdn.com/s/EoDl6Tl62d"},{"id":"小鱼山公园","name":"小鱼山公园","area":"老城西区","lat":36.058,"lng":120.341,"time":"约40分钟","fee":"10元","desc":"山顶观海阁可俯瞰第一海水浴场月牙湾与汇泉湾，是青岛「红瓦绿树、碧海蓝天」的最佳取景框。公园小巧精致，十分钟可登顶。","tip":"与大学路、信号山顺路，可串成半日老城线。","img":"https://aka.doubaocdn.com/s/8ZL5kaJRsn"},{"id":"小青岛","name":"小青岛","area":"老城西区","lat":36.053,"lng":120.325,"time":"约1小时","fee":"15元","desc":"德占时期修筑的海上小岛，白色灯塔与黑松是它的标志。通过琴屿路长堤与陆地相连，走到底部吹海风看浪，回头能望见老城全景。","tip":"傍晚亮灯后最美；与海军博物馆相邻可同游。","img":"https://aka.doubaocdn.com/s/w8ryaVhLpd"},{"id":"海军博物馆","name":"海军博物馆","area":"老城西区","lat":36.055,"lng":120.326,"time":"约1.5小时","fee":"免费(需预约)","desc":"国内唯一的海军主题博物馆，停泊着退役驱逐舰与潜艇，可登舰参观。展馆从晚清海军讲到现代航母，军事迷不可错过。","tip":"免费但需提前在公众号预约；登舰记得穿平底鞋。","img":"https://aka.doubaocdn.com/s/99pPrmu4MX"},{"id":"鲁迅公园","name":"鲁迅公园","area":"老城西区","lat":36.057,"lng":120.337,"time":"约40分钟","fee":"免费","desc":"沿琴屿路绵延的海边松林公园，礁石与浪花就在脚下。红褐色礁岸配青松碧海，是本地人散步遛弯的老牌海滨公园。","tip":"公园沿海步道直通小青岛，适合傍晚吹风。","img":"https://aka.doubaocdn.com/s/k1O5kIsDUW"},{"id":"第一海水浴场","name":"第一海水浴场","area":"东部海岸","lat":36.057,"lng":120.344,"time":"约1.5小时","fee":"免费","desc":"青岛最著名的月牙形海湾浴场，沙细浪缓。岸上红瓦建筑与翠绿山丘环抱，夏季游泳季人气爆棚，是「汇泉湾」的代名词。","tip":"夏季6-9月开放游泳；旁边有更衣冲淋设施。","img":"https://aka.doubaocdn.com/s/Lvjjk6aOuP"},{"id":"青岛海底世界","name":"青岛海底世界","area":"东部海岸","lat":36.055,"lng":120.335,"time":"约2小时","fee":"130元","desc":"建在百年水族馆基础上的海洋馆，拥有亚洲最长的海底隧道之一。梦幻水母宫、鲨鱼湾与「美人鱼」表演是必看项目，适合带娃。","tip":"旺季排队久，建议上午早到；表演场次提前查。","img":"https://aka.doubaocdn.com/s/HuRgb69RhJ"},{"id":"八大关","name":"八大关","area":"东部海岸","lat":36.054,"lng":120.355,"time":"约1.5小时","fee":"免费","desc":"十条以关隘命名的马路组成的万国建筑博览区，集中了200多栋欧式别墅。花石楼、公主楼、元帅楼各有故事，林荫道四季皆美，秋日落叶最浪漫。","tip":"花石楼门票8.5元；建议租共享单车骑行游览。","img":"https://aka.doubaocdn.com/s/HVXTRsvM9E"},{"id":"第二海水浴场","name":"第二海水浴场","area":"东部海岸","lat":36.052,"lng":120.352,"time":"约1.5小时","fee":"免费","desc":"八大关南侧的小众海湾，礁石环抱、水清沙白，岸边绿树红瓦。人比第一海水浴场少得多，是本地人私藏的安静下海点。","tip":"退潮时可捡贝壳；旁边就是山海关路老别墅。","img":"https://aka.doubaocdn.com/s/p7JhXnX3lF"},{"id":"第三海水浴场","name":"第三海水浴场","area":"东部海岸","lat":36.051,"lng":120.372,"time":"约1小时","fee":"免费","desc":"太平角与浮山湾之间的狭长沙滩，正对东部新城天际线。傍晚退潮后滩面开阔，是拍「城市+大海」同框的绝佳机位。","tip":"傍晚配浮山湾灯光秀一起看最值。","img":"https://aka.doubaocdn.com/s/gWFbkrSkAJ"},{"id":"太平角","name":"太平角","area":"东部海岸","lat":36.05,"lng":120.36,"time":"约1小时","fee":"免费","desc":"伸入海中的岬角，礁石嶙峋、松林葱郁，沿海木栈道串联起多处观海平台。傍晚落日从海面下沉，远山近海层次分明。","tip":"日落前1小时到，光线最柔和。","img":"https://aka.doubaocdn.com/s/pUB2MMiFG1"},{"id":"五四广场","name":"五四广场","area":"东部海岸","lat":36.062,"lng":120.383,"time":"约40分钟","fee":"免费","desc":"青岛的城市会客厅，红色巨型雕塑「五月的风」是地标中的地标。广场北望市政府，南面就是浮山湾，夜晚灯光秀的主视角。","tip":"晚上8点有灯光秀；与奥帆中心连成一片步行可达。","img":"https://aka.doubaocdn.com/s/lcPVb4HXHx"},{"id":"奥帆中心","name":"奥帆中心","area":"东部海岸","lat":36.058,"lng":120.387,"time":"约1小时","fee":"免费","desc":"2008年奥运会帆船比赛场地，白色帆船桅杆林立的港湾，火炬雕塑与奥运五环是打卡点。可乘帆船出海，晚上灯火璀璨。","tip":"帆船体验约100元/人；情人坝就在港湾尽头。","img":"https://aka.doubaocdn.com/s/01ghQFujLx"},{"id":"情人坝","name":"情人坝","area":"东部海岸","lat":36.053,"lng":120.39,"time":"约40分钟","fee":"免费","desc":"奥帆中心尽头的防波堤，白色灯塔矗立海堤尽头，两侧是湛蓝海水与城市天际线。傍晚看夕阳沉入海面，是本地公认的浪漫地标。","tip":"夜晚灯光亮起后氛围最佳；堤上风大记得带外套。","img":"https://aka.doubaocdn.com/s/YIoyUjKWNR"},{"id":"浮山湾夜景","name":"浮山湾夜景","area":"东部海岸","lat":36.058,"lng":120.387,"time":"约1小时","fee":"免费","desc":"青岛的「外滩」，东部新城摩天楼群每晚上演灯光秀，万千霓虹倒映海面。五四广场与奥帆中心是最佳观赏位，部分楼体还有主题动画。","tip":"灯光秀约晚7:30开始，周末内容更丰富。","img":"https://aka.doubaocdn.com/s/OJ1rnp17yj"},{"id":"燕儿岛公园","name":"燕儿岛公园","area":"东部海岸","lat":36.058,"lng":120.409,"time":"约1小时","fee":"免费","desc":"新晋网红海滨公园，蜿蜒木栈道贴着礁石海岸延伸，海浪就在脚下。人少景美，落日时分的剪影照非常出片。","tip":"夕阳时段到访；栈道湿滑注意安全。","img":"https://aka.doubaocdn.com/s/NNBqIhJk7M"},{"id":"小麦岛公园","name":"小麦岛公园","area":"东部海岸","lat":36.06,"lng":120.426,"time":"约1.5小时","fee":"免费","desc":"半岛式海岛公园，大片草坪延伸入海，环岛步道360度看海。文艺氛围浓厚，野餐、看日落、听街头艺人唱歌都很惬意。","tip":"傍晚人最多；草坪可铺野餐垫，记得带走垃圾。","img":"https://aka.doubaocdn.com/s/u60bs9JUMs"},{"id":"雕塑园","name":"雕塑园","area":"东部海岸","lat":36.058,"lng":120.445,"time":"约1小时","fee":"免费","desc":"海边草坪上错落陈列着现代雕塑，艺术与山海自然融合。沿滨海步道从石老人方向走来，一路都是开阔海景。","tip":"与石老人浴场、极地海洋世界可串成一线。","img":"https://aka.doubaocdn.com/s/AZfhIk0sMC"},{"id":"极地海洋世界","name":"极地海洋世界","area":"东部海岸","lat":36.077,"lng":120.45,"time":"约2.5小时","fee":"230元","desc":"国内领先的极地海洋主题公园，白鲸、企鹅、海豚表演精彩，还有冰极天地与深海奇幻馆。场馆临海而建，看完表演可顺路看海。","tip":"表演场次需提前查；套票含多个展馆，一天玩得完。","img":"https://aka.doubaocdn.com/s/u9L5KjlosN"},{"id":"石老人海水浴场","name":"石老人海水浴场","area":"崂山","lat":36.083,"lng":120.463,"time":"约1.5小时","fee":"免费","desc":"崂山脚下的宽阔浴场，海中矗立着17米高的「石老人」海蚀柱，是青岛的著名自然奇观。沙滩绵长、视野开阔，日出时分尤其壮美。","tip":"日出约5:30-6:30；夏季游泳区有安全围网。","img":"https://aka.doubaocdn.com/s/rNlsQc7eGM"},{"id":"中山公园","name":"中山公园","area":"东部海岸","lat":36.063,"lng":120.35,"time":"约1小时","fee":"免费","desc":"青岛最大的老牌公园，樱花大道闻名全国，每年4月樱花季万人空巷。园内还有动物园、索道与小西湖，本地人休闲的后花园。","tip":"4月樱花节必去；索道上山可俯瞰全园。","img":"https://aka.doubaocdn.com/s/vJG9pl01bx"},{"id":"青岛山炮台","name":"青岛山炮台","area":"市北","lat":36.078,"lng":120.345,"time":"约1.5小时","fee":"60元","desc":"一战亚洲唯一战场遗址，山顶炮台与地下隧道保存完好。站在炮台俯瞰青岛全景，山下的展馆讲述着德占与一战的历史。","tip":"遗址博物馆含讲解；隧道内温度低，夏季也带件外套。","img":"https://aka.doubaocdn.com/s/D6owwyEPAo"},{"id":"台东步行街","name":"台东步行街","area":"市北","lat":36.083,"lng":120.355,"time":"约1.5小时","fee":"免费","desc":"青岛人气最旺的商业步行街，夜晚霓虹闪烁、小吃摊林立。烤鱿鱼、炸串、烤冷面、奶茶一字排开，是本地人的「深夜食堂」。","tip":"晚上7点后最热闹；小吃价格实惠分量足。","img":"https://aka.doubaocdn.com/s/IPCEJPDvX6"},{"id":"广兴里里院","name":"广兴里里院","area":"市北","lat":36.072,"lng":120.322,"time":"约1小时","fee":"免费","desc":"青岛特有的「里院」建筑代表，红砖围合的四合院式街区，拱券回廊与铁艺楼梯充满旧时光气息。近年修缮后成为文创聚集地。","tip":"老城改造后很出片；与中山路步行可到。","img":"https://aka.doubaocdn.com/s/YYUg2Wxrpf"},{"id":"青岛啤酒博物馆","name":"青岛啤酒博物馆","area":"市北","lat":36.081,"lng":120.352,"time":"约1.5小时","fee":"60元","desc":"建在1903年日耳曼啤酒厂原址上，红砖厂房与老式酿酒设备完整保留。馆内可看百年流水线、品原浆啤酒，出口处还能领纪念啤酒。","tip":"门票含两杯啤酒；周一闭馆注意安排。","img":"https://aka.doubaocdn.com/s/5Gvb8Upo35"},{"id":"崂山太清宫","name":"崂山太清宫","area":"崂山","lat":36.105,"lng":120.644,"time":"约2小时","fee":"27元(进山票另计)","desc":"崂山道教祖庭，建于西汉，山海之间的千年道观。红墙灰瓦依山面海，古树参天，蒲松龄笔下的崂山道士就出自这里。","tip":"建议请讲解，道教文化细节很多；山下有太清索道。","img":"https://aka.doubaocdn.com/s/9vIZ8unXbA"},{"id":"崂山巨峰","name":"崂山巨峰","area":"崂山","lat":36.165,"lng":120.61,"time":"约2.5小时","fee":"90元","desc":"崂山主峰，海拔1132米，花岗岩峰顶常有云海翻涌，晴日可远眺大海与群岛。登顶「巨峰旭照」是青岛十景之一。","tip":"体力要求高，建议乘索道上山再徒步；山顶风大备外套。","img":"https://aka.doubaocdn.com/s/pYqhFX963D"},{"id":"北九水","name":"北九水","area":"崂山","lat":36.19,"lng":120.588,"time":"约2.5小时","fee":"65元","desc":"崂山最灵秀的峡谷，溪流叠瀑、潭水清澈，「九水十八潭」沿山谷展开。夏季清凉避暑，秋季红叶满山。","tip":"雨后水量大时最美；穿防滑鞋，石头湿滑。","img":"https://aka.doubaocdn.com/s/U06ybKWzCt"},{"id":"华严寺","name":"华严寺","area":"崂山","lat":36.19,"lng":120.66,"time":"约1小时","fee":"含崂山票","desc":"崂山现存规模最大的佛教寺院，明代始建，灰瓦红柱的殿宇依山而建，古树掩映、晨钟暮鼓。寺前可远眺仰口海湾。","tip":"与仰口景区相邻，可安排同一天游览。","img":"https://aka.doubaocdn.com/s/tCywnRYgoL"},{"id":"崂山仰口","name":"崂山仰口","area":"崂山","lat":36.215,"lng":120.681,"time":"约2小时","fee":"90元","desc":"崂山东麓的海湾景区，奇峰怪石与碧海沙滩相连。可登山看「狮子峰」「觅天洞」，山下仰口海水浴场沙质细软。","tip":"索道+步行组合最省力；山顶视野极佳。","img":"https://aka.doubaocdn.com/s/lUOqi9X4uV"},{"id":"金沙滩","name":"金沙滩","area":"西海岸","lat":35.96,"lng":120.24,"time":"约2小时","fee":"免费","desc":"青岛最长最美的沙滩，全长3.5公里，沙质金黄细腻，号称「亚洲第一滩」。夏季啤酒节主会场就在旁边，玩水冲浪一应俱全。","tip":"夏季啤酒节期间最热闹；泳具现场可租。","img":"https://aka.doubaocdn.com/s/8EuD24ta7b"},{"id":"银沙滩","name":"银沙滩","area":"西海岸","lat":35.945,"lng":120.222,"time":"约1.5小时","fee":"免费","desc":"金沙滩西侧的小众沙滩，沙色泛银、水清浪缓，人少宁静。适合不想扎堆的游客，发呆、赶海、看日落都舒服。","tip":"无商业设施，自带水和零食；退潮可赶海。","img":"https://aka.doubaocdn.com/s/62jtt5tIH7"},{"id":"唐岛湾","name":"唐岛湾","area":"西海岸","lat":35.96,"lng":120.18,"time":"约1.5小时","fee":"免费","desc":"国家级湿地公园式海湾，绿道、芦苇荡与海上木栈桥环绕。摩天轮与「琴岛之眼」是地标，租自行车骑行环湾非常惬意。","tip":"骑行约1小时可绕半圈；傍晚看日落很美。","img":"https://aka.doubaocdn.com/s/yi8RKtUKhl"},{"id":"红树林","name":"红树林","area":"西海岸","lat":35.95,"lng":120.15,"time":"约1小时","fee":"免费","desc":"德式风情度假小镇，钟楼、沙滩、海滨步行街一应俱全，被称为「北方小欧洲」。白天逛建筑，晚上灯光亮起更漂亮。","tip":"度假区内有住宿和餐饮，适合亲子慢玩。","img":"https://aka.doubaocdn.com/s/xGtRyqOYul"},{"id":"城市阳台","name":"城市阳台","area":"西海岸","lat":35.885,"lng":120.015,"time":"约1小时","fee":"免费","desc":"西海岸新区的滨海广场，开阔沙滩与城市绿道相连，雕塑与观海平台错落。本地人傍晚散步、放风筝的休闲地。","tip":"与灵山岛码头相近，可作上岛前的中转站。","img":"https://aka.doubaocdn.com/s/j4CUfeSjGW"},{"id":"东方影都","name":"东方影都","area":"西海岸","lat":35.905,"lng":120.045,"time":"约1.5小时","fee":"免费","desc":"青岛「电影之都」核心区，星光岛、影视产业园与电影博物馆组成大片取景地，多部大片的拍摄地。外景街拍非常出片。","tip":"星光岛环岛步道可骑行；晚上亮灯后更美。","img":"https://aka.doubaocdn.com/s/DQee7ylNwi"},{"id":"大珠山","name":"大珠山","area":"西海岸","lat":35.8,"lng":119.99,"time":"约2.5小时","fee":"40元","desc":"以春季杜鹃花海闻名，漫山粉红花带沿山脊铺展，远眺大海壮美辽阔。秋季红叶与奇石也值得一爬。","tip":"4月杜鹃花节最佳；登山备足水。","img":"https://aka.doubaocdn.com/s/QP1Z94wesI"},{"id":"琅琊台","name":"琅琊台","area":"西海岸","lat":35.66,"lng":119.94,"time":"约2小时","fee":"50元","desc":"秦始皇三巡之地，临海高台上的古遗址，石阶通向观海亭。历史上徐福东渡的起航地，登台可眺望海天一色。","tip":"遗址公园较大，穿舒适鞋；观海亭风大。","img":"https://aka.doubaocdn.com/s/mA1oTVepCb"},{"id":"灵山岛","name":"灵山岛","area":"西海岸","lat":35.77,"lng":120.16,"time":"约半天","fee":"船票约120元(往返)","desc":"北方第一高岛，海上孤岛青山如黛，渔村、港湾与礁石海岸原生态。岛上可徒步、赶海、看日出，适合避世一日。","tip":"需乘船约40分钟上岛，班次少提前查；晕船备药。","img":"https://aka.doubaocdn.com/s/acbklYHMxg"}];
+window.__HOTELS__ = [{"name":"青岛瑞吉酒店","area":"市南","tier":"奢华","price":"¥1600-4000 / 晚","desc":"369米海天中心云端客房，360°全景落地窗俯瞰浮山湾，楼下即五四广场商圈。","lat":36.058,"lng":120.383},{"name":"青岛海天大酒店","area":"市南","tier":"奢华","price":"¥1200-2600 / 晚","desc":"青岛老牌地标五星，海天中心塔楼高层海景房视野开阔，近第三海水浴场。","lat":36.057,"lng":120.383},{"name":"青岛香格里拉大酒店","area":"市南","tier":"奢华","price":"¥1100-2200 / 晚","desc":"岛城第一家国际五星，香港中路黄金地段，行政酒廊可观浮山湾，服务稳健。","lat":36.061,"lng":120.383},{"name":"青岛威斯汀酒店","area":"市南","tier":"奢华","price":"¥1000-2000 / 晚","desc":"五四广场北侧高层酒店，恒温泳池与健身房配套完善，商务出行首选。","lat":36.062,"lng":120.38},{"name":"青岛海尔洲际酒店","area":"市南","tier":"奢华","price":"¥1200-2800 / 晚","desc":"紧邻奥帆中心，港湾海景房可看帆船码头，洲际品质稳定，亲子家庭友好。","lat":36.057,"lng":120.387},{"name":"青岛颐中皇冠假日酒店","area":"市南","tier":"高档","price":"¥600-1400 / 晚","desc":"香港中路38层地标，近万象城与五四广场，高层视野好，性价比高。","lat":36.06,"lng":120.381},{"name":"青岛中心假日酒店","area":"市南","tier":"高档","price":"¥500-1100 / 晚","desc":"近五四广场地铁站，交通便利，客房舒适，适合商务与自由行。","lat":36.062,"lng":120.375},{"name":"青岛黄海饭店","area":"市南","tier":"高档","price":"¥400-900 / 晚","desc":"老牌国营四星，市南区中心位置，服务实在，是老青岛人的情怀之选。","lat":36.061,"lng":120.378},{"name":"青岛美高梅华府酒店","area":"市南","tier":"奢华","price":"¥1500-3500 / 晚","desc":"美高梅旗下东方美学酒店，套房私密性好，近五四广场与海天中心。","lat":36.059,"lng":120.379},{"name":"青岛海景花园大酒店","area":"市南","tier":"高档","price":"¥700-1600 / 晚","desc":"彰化路海边园林式五星，海景房正对浮山湾，服务口碑极佳。","lat":36.055,"lng":120.368},{"name":"青岛汇泉王朝大饭店","area":"市南","tier":"高档","price":"¥500-1200 / 晚","desc":"南海路近第一海水浴场，老牌五星，下楼即海滩，看海游泳方便。","lat":36.057,"lng":120.346},{"name":"青岛栈桥王子饭店","area":"市南","tier":"高档","price":"¥400-900 / 晚","desc":"百年历史欧式建筑改造，正对栈桥海景，复古风情浓郁。","lat":36.062,"lng":120.322},{"name":"青岛富力艾美酒店","area":"市南","tier":"高档","price":"¥600-1300 / 晚","desc":"近五四广场，法式优雅设计，行政楼层视野佳，商务休闲皆宜。","lat":36.06,"lng":120.386},{"name":"青岛丽晶大酒店","area":"市南","tier":"高档","price":"¥500-1100 / 晚","desc":"香港中路老牌五星，房间宽敞，近奥帆中心，性价比不错。","lat":36.056,"lng":120.39},{"name":"青岛泛海名人酒店","area":"市南","tier":"舒适","price":"¥350-700 / 晚","desc":"近太平角与第三海水浴场，海景房性价比高，适合安静度假。","lat":36.057,"lng":120.355},{"name":"青岛府新大厦","area":"市南","tier":"舒适","price":"¥300-600 / 晚","desc":"市政府旁的老牌会议酒店，位置便利，房间干净舒适。","lat":36.06,"lng":120.374},{"name":"青岛八大关宾馆","area":"市南","tier":"高档","price":"¥500-1200 / 晚","desc":"藏在八大关万国建筑里的园林酒店，出门就是林荫道与海滩。","lat":36.055,"lng":120.358},{"name":"青岛德宝花园大酒店","area":"市南","tier":"舒适","price":"¥350-750 / 晚","desc":"八大关附近欧式花园酒店，环境安静，适合休闲度假。","lat":36.055,"lng":120.365},{"name":"青岛东方饭店","area":"市南","tier":"舒适","price":"¥300-600 / 晚","desc":"中山路老字号饭店，老城核心位置，逛栈桥教堂都方便。","lat":36.065,"lng":120.318},{"name":"青岛武胜关度假酒店","area":"市南","tier":"舒适","price":"¥350-700 / 晚","desc":"八大关武胜关路，近海边与林荫道，欧式小楼别有风情。","lat":36.056,"lng":120.356},{"name":"青岛贵都大饭店","area":"市南","tier":"舒适","price":"¥300-600 / 晚","desc":"五四广场附近老牌酒店，价格亲民，位置核心。","lat":36.061,"lng":120.379},{"name":"青岛怡堡精品酒店","area":"市南","tier":"舒适","price":"¥400-800 / 晚","desc":"信号山下的德式庭院精品酒店，红瓦绿树环绕，文艺范十足。","lat":36.064,"lng":120.33},{"name":"青岛海怡帆船酒店","area":"市南","tier":"舒适","price":"¥400-900 / 晚","desc":"奥帆中心旁，港湾景观，适合看帆船与夜景。","lat":36.058,"lng":120.39},{"name":"青岛中航翔通游艇会大酒店","area":"市南","tier":"舒适","price":"¥350-800 / 晚","desc":"游艇码头旁的海景酒店，近奥帆中心，环境安静。","lat":36.058,"lng":120.389},{"name":"青岛栈桥智选假日酒店","area":"市南","tier":"舒适","price":"¥350-650 / 晚","desc":"中山路近栈桥，IHG旗下，早餐不错，位置在老城核心。","lat":36.063,"lng":120.316},{"name":"青岛五四广场智选假日酒店","area":"市南","tier":"舒适","price":"¥380-700 / 晚","desc":"近五四广场与地铁，出行方便，IHG品牌品质稳定。","lat":36.061,"lng":120.381},{"name":"亚朵酒店五四广场店","area":"市南","tier":"舒适","price":"¥450-850 / 晚","desc":"距五四广场步行几分钟，亚朵式文艺设计，早餐和床品口碑好。","lat":36.059,"lng":120.384},{"name":"亚朵酒店奥帆中心店","area":"市南","tier":"舒适","price":"¥450-880 / 晚","desc":"近奥帆中心与情人坝，房间带海景的房型很抢手。","lat":36.057,"lng":120.389},{"name":"全季酒店五四广场店","area":"市南","tier":"舒适","price":"¥350-650 / 晚","desc":"近市政府与五四广场，全季标准品质，干净利落。","lat":36.06,"lng":120.382},{"name":"全季酒店栈桥店","area":"市南","tier":"舒适","price":"¥300-550 / 晚","desc":"老城核心位置，步行可达栈桥、劈柴院，性价比高。","lat":36.063,"lng":120.318},{"name":"汉庭酒店栈桥店","area":"市南","tier":"经济","price":"¥180-350 / 晚","desc":"距栈桥几百米，经济连锁里的位置担当，适合预算型游客。","lat":36.064,"lng":120.32},{"name":"汉庭酒店八大关店","area":"市南","tier":"经济","price":"¥200-380 / 晚","desc":"近八大关与第二海水浴场，安静实惠。","lat":36.055,"lng":120.36},{"name":"如家酒店五四广场店","area":"市南","tier":"经济","price":"¥180-350 / 晚","desc":"五四广场商圈，楼下餐饮丰富，出行方便。","lat":36.061,"lng":120.383},{"name":"如家酒店栈桥店","area":"市南","tier":"经济","price":"¥160-320 / 晚","desc":"火车站与栈桥之间，老城步行游览的实惠之选。","lat":36.065,"lng":120.319},{"name":"锦江之星中山路店","area":"市南","tier":"经济","price":"¥160-300 / 晚","desc":"中山路老城区，近天主教堂，干净实惠。","lat":36.066,"lng":120.316},{"name":"锦江之星火车站店","area":"市南","tier":"经济","price":"¥150-290 / 晚","desc":"青岛站步行可达，适合赶车或刚到青岛的过渡。","lat":36.061,"lng":120.309},{"name":"桔子水晶栈桥店","area":"市南","tier":"舒适","price":"¥350-650 / 晚","desc":"设计感强的中端连锁，近栈桥，房型宽敞。","lat":36.064,"lng":120.321},{"name":"维也纳酒店火车站店","area":"市南","tier":"舒适","price":"¥300-580 / 晚","desc":"近青岛站，维也纳品质稳定，交通枢纽便利。","lat":36.063,"lng":120.312},{"name":"丽枫酒店五四广场店","area":"市南","tier":"舒适","price":"¥350-680 / 晚","desc":"薰衣草主题中端酒店，近五四广场，香氛与床品有特色。","lat":36.06,"lng":120.38},{"name":"白玉兰酒店栈桥店","area":"市南","tier":"经济","price":"¥180-330 / 晚","desc":"锦江旗下经济品牌，近栈桥与中山路，位置便利。","lat":36.062,"lng":120.317},{"name":"喆啡酒店奥帆店","area":"市南","tier":"舒适","price":"¥350-680 / 晚","desc":"咖啡主题设计酒店，近奥帆中心，年轻游客喜欢。","lat":36.057,"lng":120.388},{"name":"宜必思酒店栈桥店","area":"市南","tier":"经济","price":"¥170-320 / 晚","desc":"法式经济连锁，国际连锁品质，近栈桥。","lat":36.064,"lng":120.319},{"name":"如家酒店火车站店","area":"市南","tier":"经济","price":"¥150-300 / 晚","desc":"青岛站旁，落地即住，适合行程第一天。","lat":36.062,"lng":120.311},{"name":"7天酒店栈桥店","area":"市南","tier":"经济","price":"¥140-280 / 晚","desc":"极简经济连锁，老城核心位置，价格实惠。","lat":36.063,"lng":120.318},{"name":"全季酒店市政府店","area":"市南","tier":"舒适","price":"¥380-700 / 晚","desc":"市政府商圈，商务出行便利，近地铁。","lat":36.063,"lng":120.385},{"name":"汉庭酒店中山路店","area":"市南","tier":"经济","price":"¥160-300 / 晚","desc":"中山路老城，近劈柴院与教堂。","lat":36.064,"lng":120.314},{"name":"青岛中央商务区假日酒店","area":"市北","tier":"高档","price":"¥450-950 / 晚","desc":"台东步行街附近，IHG旗下，逛夜市很方便，客房宽敞。","lat":36.089,"lng":120.376},{"name":"青岛富力艾美酒店","area":"市北","tier":"高档","price":"¥550-1200 / 晚","desc":"市北CBD延吉路，法式设计，高层视野好。","lat":36.09,"lng":120.375},{"name":"亚朵酒店凯德MALL店","area":"市北","tier":"舒适","price":"¥400-780 / 晚","desc":"新都心凯德商圈，购物餐饮方便，亚朵品质稳定。","lat":36.095,"lng":120.365},{"name":"亚朵酒店延安路店","area":"市北","tier":"舒适","price":"¥380-720 / 晚","desc":"近青岛山炮台与市北老城区，文艺设计风。","lat":36.085,"lng":120.352},{"name":"全季酒店台东店","area":"市北","tier":"舒适","price":"¥300-580 / 晚","desc":"台东步行街商圈，夜宵逛街两不误。","lat":36.086,"lng":120.357},{"name":"汉庭酒店台东店","area":"市北","tier":"经济","price":"¥180-340 / 晚","desc":"台东商圈性价比之选，近地铁。","lat":36.085,"lng":120.356},{"name":"如家酒店台东店","area":"市北","tier":"经济","price":"¥170-330 / 晚","desc":"台东步行街旁，热闹方便。","lat":36.086,"lng":120.355},{"name":"维也纳酒店市北店","area":"市北","tier":"舒适","price":"¥300-560 / 晚","desc":"市北CBD区域，商务出行方便。","lat":36.088,"lng":120.37},{"name":"桔子酒店市北店","area":"市北","tier":"舒适","price":"¥320-600 / 晚","desc":"近台东与市北CBD，设计感强。","lat":36.087,"lng":120.362},{"name":"7天酒店市北店","area":"市北","tier":"经济","price":"¥150-280 / 晚","desc":"市北核心位置，价格实惠。","lat":36.09,"lng":120.358},{"name":"宜必思酒店市北店","area":"市北","tier":"经济","price":"¥170-320 / 晚","desc":"国际连锁品质，位置便利。","lat":36.088,"lng":120.368},{"name":"白玉兰酒店台东店","area":"市北","tier":"经济","price":"¥180-330 / 晚","desc":"台东商圈，经济实惠。","lat":36.092,"lng":120.372},{"name":"全季酒店新都心店","area":"市北","tier":"舒适","price":"¥320-620 / 晚","desc":"新都心商圈，近地铁3号线。","lat":36.093,"lng":120.363},{"name":"汉庭酒店新都心店","area":"市北","tier":"经济","price":"¥180-350 / 晚","desc":"新都心区域，性价比高。","lat":36.091,"lng":120.361},{"name":"亚朵酒店浮山后店","area":"市北","tier":"舒适","price":"¥400-750 / 晚","desc":"浮山后成熟生活区，餐饮丰富。","lat":36.092,"lng":120.39},{"name":"锦江之星市北店","area":"市北","tier":"经济","price":"¥160-300 / 晚","desc":"市北老城区，实惠干净。","lat":36.087,"lng":120.366},{"name":"青岛鲁商凯悦酒店","area":"崂山","tier":"奢华","price":"¥900-2000 / 晚","desc":"石老人海水浴场旁，山海景观房，凯悦品质，看日出方便。","lat":36.085,"lng":120.46},{"name":"青岛证大喜马拉雅酒店","area":"崂山","tier":"高档","price":"¥600-1300 / 晚","desc":"海尔路商务区，喜马拉雅系高端酒店，设施新。","lat":36.09,"lng":120.45},{"name":"青岛远洋大酒店","area":"崂山","tier":"高档","price":"¥450-950 / 晚","desc":"近石老人与会展中心，海景房视野好。","lat":36.085,"lng":120.452},{"name":"青岛索菲亚国际大酒店","area":"崂山","tier":"高档","price":"¥450-950 / 晚","desc":"海尔路沿线，商务配套完善，性价比高。","lat":36.082,"lng":120.455},{"name":"青岛海天大剧院酒店","area":"崂山","tier":"高档","price":"¥500-1000 / 晚","desc":"近青岛大剧院与国信体育中心，演艺配套。","lat":36.08,"lng":120.458},{"name":"青岛汉卓酒店","area":"崂山","tier":"高档","price":"¥550-1100 / 晚","desc":"崂山商务区高端酒店，近金家岭金融区。","lat":36.092,"lng":120.462},{"name":"青岛国际会展中心智选假日酒店","area":"崂山","tier":"舒适","price":"¥350-700 / 晚","desc":"会展中心旁，IHG旗下，参展出差方便。","lat":36.088,"lng":120.475},{"name":"亚朵酒店石老人店","area":"崂山","tier":"舒适","price":"¥450-850 / 晚","desc":"石老人浴场对面，海景房抢手，文艺设计。","lat":36.084,"lng":120.462},{"name":"全季酒店金家岭店","area":"崂山","tier":"舒适","price":"¥350-680 / 晚","desc":"金家岭金融区，商务出行便利。","lat":36.09,"lng":120.468},{"name":"全季酒店石老人店","area":"崂山","tier":"舒适","price":"¥350-650 / 晚","desc":"近石老人海水浴场，看海方便。","lat":36.086,"lng":120.465},{"name":"汉庭酒店石老人店","area":"崂山","tier":"经济","price":"¥200-380 / 晚","desc":"石老人商圈，实惠近海。","lat":36.083,"lng":120.465},{"name":"如家酒店石老人店","area":"崂山","tier":"经济","price":"¥190-360 / 晚","desc":"近石老人浴场，性价比高。","lat":36.085,"lng":120.46},{"name":"如家酒店会展中心店","area":"崂山","tier":"经济","price":"¥180-350 / 晚","desc":"会展中心附近，展会期方便。","lat":36.087,"lng":120.472},{"name":"桔子酒店崂山店","area":"崂山","tier":"舒适","price":"¥320-620 / 晚","desc":"海尔路沿线，设计感中端连锁。","lat":36.088,"lng":120.455},{"name":"维也纳酒店崂山店","area":"崂山","tier":"舒适","price":"¥300-580 / 晚","desc":"近石老人区域，出行方便。","lat":36.086,"lng":120.458},{"name":"白玉兰酒店崂山店","area":"崂山","tier":"经济","price":"¥180-330 / 晚","desc":"崂山区实惠之选。","lat":36.084,"lng":120.463},{"name":"青岛李沧绿城喜来登酒店","area":"李沧","tier":"高档","price":"¥500-1100 / 晚","desc":"李沧区首家国际五星，金水路商圈，客房宽敞舒适。","lat":36.155,"lng":120.43},{"name":"青岛李沧智选假日酒店","area":"李沧","tier":"舒适","price":"¥320-620 / 晚","desc":"李村商圈，IHG旗下，地铁站附近，出行方便。","lat":36.165,"lng":120.42},{"name":"全季酒店李村店","area":"李沧","tier":"舒适","price":"¥300-580 / 晚","desc":"李村商圈核心，购物餐饮方便。","lat":36.168,"lng":120.425},{"name":"汉庭酒店李村店","area":"李沧","tier":"经济","price":"¥180-340 / 晚","desc":"李村地铁站旁，交通便利。","lat":36.17,"lng":120.422},{"name":"如家酒店李村店","area":"李沧","tier":"经济","price":"¥170-330 / 晚","desc":"李村商圈，热闹实惠。","lat":36.167,"lng":120.428},{"name":"维也纳酒店李沧店","area":"李沧","tier":"舒适","price":"¥300-560 / 晚","desc":"李村区域，品质稳定。","lat":36.166,"lng":120.418},{"name":"桔子酒店李沧店","area":"李沧","tier":"舒适","price":"¥320-600 / 晚","desc":"近李村商圈，设计感强。","lat":36.169,"lng":120.43},{"name":"亚朵酒店李沧店","area":"李沧","tier":"舒适","price":"¥380-720 / 晚","desc":"李沧核心区，亚朵品质稳定。","lat":36.16,"lng":120.435},{"name":"7天酒店李沧店","area":"李沧","tier":"经济","price":"¥150-280 / 晚","desc":"李村附近，实惠。","lat":36.165,"lng":120.425},{"name":"宜必思酒店李沧店","area":"李沧","tier":"经济","price":"¥170-320 / 晚","desc":"近地铁，国际连锁。","lat":36.168,"lng":120.428},{"name":"锦江之星李村店","area":"李沧","tier":"经济","price":"¥160-300 / 晚","desc":"李村商圈，干净实惠。","lat":36.167,"lng":120.424},{"name":"白玉兰酒店李村店","area":"李沧","tier":"经济","price":"¥170-320 / 晚","desc":"李村区域，经济选择。","lat":36.166,"lng":120.431},{"name":"青岛景园假日酒店","area":"城阳","tier":"高档","price":"¥400-900 / 晚","desc":"城阳流亭区域老牌酒店，近机场，转机或北部出行方便。","lat":36.3,"lng":120.4},{"name":"青岛鑫江温德姆酒店","area":"城阳","tier":"高档","price":"¥450-950 / 晚","desc":"温德姆旗下，近青岛北站与机场，配套泳池健身房。","lat":36.32,"lng":120.43},{"name":"青岛星河湾酒店","area":"城阳","tier":"高档","price":"¥600-1300 / 晚","desc":"白沙湾畔的高端酒店，园林景观优美，度假氛围浓。","lat":36.28,"lng":120.37},{"name":"城阳希尔顿欢朋酒店","area":"城阳","tier":"舒适","price":"¥380-720 / 晚","desc":"希尔顿旗下欢朋品牌，近机场，早餐不错。","lat":36.305,"lng":120.41},{"name":"智选假日流亭机场店","area":"城阳","tier":"舒适","price":"¥320-600 / 晚","desc":"近流亭机场，IHG旗下，赶早班机方便。","lat":36.29,"lng":120.395},{"name":"亚朵酒店城阳店","area":"城阳","tier":"舒适","price":"¥380-720 / 晚","desc":"城阳核心区，亚朵品质，餐饮配套丰富。","lat":36.302,"lng":120.398},{"name":"全季酒店流亭店","area":"城阳","tier":"舒适","price":"¥300-580 / 晚","desc":"流亭区域，近机场，干净实惠。","lat":36.295,"lng":120.405},{"name":"汉庭酒店流亭店","area":"城阳","tier":"经济","price":"¥180-340 / 晚","desc":"近机场，赶机实惠之选。","lat":36.298,"lng":120.402},{"name":"如家酒店流亭店","area":"城阳","tier":"经济","price":"¥170-330 / 晚","desc":"流亭区域，价格实惠。","lat":36.297,"lng":120.408},{"name":"维也纳酒店城阳店","area":"城阳","tier":"舒适","price":"¥300-560 / 晚","desc":"城阳中心区域，品质稳定。","lat":36.31,"lng":120.415},{"name":"桔子酒店流亭店","area":"城阳","tier":"舒适","price":"¥320-600 / 晚","desc":"近机场与城阳中心。","lat":36.299,"lng":120.4},{"name":"7天酒店城阳店","area":"城阳","tier":"经济","price":"¥150-280 / 晚","desc":"城阳区域，经济选择。","lat":36.306,"lng":120.412},{"name":"锦江之星城阳店","area":"城阳","tier":"经济","price":"¥160-300 / 晚","desc":"城阳核心区，干净实惠。","lat":36.299,"lng":120.4},{"name":"宜必思流亭店","area":"城阳","tier":"经济","price":"¥170-320 / 晚","desc":"近机场，国际连锁品质。","lat":36.295,"lng":120.398},{"name":"青岛金沙滩希尔顿酒店","area":"西海岸","tier":"奢华","price":"¥900-2200 / 晚","desc":"金沙滩正对面，自带私属沙滩与室内泳池，亲子度假首选。","lat":35.96,"lng":120.24},{"name":"青岛涵碧楼酒店","area":"西海岸","tier":"奢华","price":"¥1400-3500 / 晚","desc":"Kerry Hill大师设计，三面环海的极简禅意度假酒店，无边泳池与私汤，蜜月首选。","lat":35.93,"lng":120.2},{"name":"青岛东方影都希尔顿逸林酒店","area":"西海岸","tier":"高档","price":"¥500-1200 / 晚","desc":"东方影都星光岛旁，希尔顿逸林品牌，近影视产业园。","lat":35.9,"lng":120.05},{"name":"青岛西海岸威斯汀酒店","area":"西海岸","tier":"高档","price":"¥600-1400 / 晚","desc":"东方影都区域高端酒店，威斯汀天梦之床，配套完善。","lat":35.905,"lng":120.06},{"name":"青岛西海岸隆和艾美度假酒店","area":"西海岸","tier":"高档","price":"¥500-1200 / 晚","desc":"灵山湾海滨度假酒店，艾美艺术气息，近红树林。","lat":35.94,"lng":120.155},{"name":"青岛红树林度假世界","area":"西海岸","tier":"高档","price":"¥600-1500 / 晚","desc":"德式风情小镇里的度假综合体，钟楼、沙滩、温泉一应俱全。","lat":35.95,"lng":120.15},{"name":"青岛金沙滩温德姆至尊酒店","area":"西海岸","tier":"奢华","price":"¥800-1800 / 晚","desc":"金沙滩畔高端度假酒店，海景房视野开阔。","lat":35.962,"lng":120.238},{"name":"青岛康大豪生大酒店","area":"西海岸","tier":"高档","price":"¥450-1000 / 晚","desc":"唐岛湾区域，商务度假两相宜。","lat":35.955,"lng":120.2},{"name":"青岛开元名都大酒店","area":"西海岸","tier":"高档","price":"¥450-1000 / 晚","desc":"唐岛湾旁，开元系酒店，服务细致。","lat":35.95,"lng":120.185},{"name":"青岛蓝海御华大饭店","area":"西海岸","tier":"高档","price":"¥400-900 / 晚","desc":"灵山湾区域，本土高端酒店品牌。","lat":35.945,"lng":120.175},{"name":"青岛东方影都万达文华酒店","area":"西海岸","tier":"奢华","price":"¥900-2000 / 晚","desc":"星光岛上的东方美学奢华酒店，毗邻影视产业园。","lat":35.903,"lng":120.048},{"name":"青岛东方影都万达嘉华酒店","area":"西海岸","tier":"高档","price":"¥500-1100 / 晚","desc":"星光岛万达系酒店，近影都，性价比高。","lat":35.905,"lng":120.052},{"name":"青岛啤酒时光海岸度假酒店","area":"西海岸","tier":"高档","price":"¥600-1400 / 晚","desc":"金沙滩啤酒城内，客房直通精酿龙头，啤酒主题特色酒店。","lat":35.958,"lng":120.232},{"name":"青岛泰成喜来登酒店","area":"西海岸","tier":"高档","price":"¥450-1000 / 晚","desc":"长江路商圈，喜来登品质，出行方便。","lat":35.92,"lng":120.15},{"name":"亚朵酒店金沙滩店","area":"西海岸","tier":"舒适","price":"¥420-800 / 晚","desc":"金沙滩附近，文艺设计，近海滩。","lat":35.961,"lng":120.242},{"name":"全季酒店唐岛湾店","area":"西海岸","tier":"舒适","price":"¥320-620 / 晚","desc":"唐岛湾商圈，购物餐饮方便。","lat":35.958,"lng":120.182},{"name":"汉庭酒店长江路店","area":"西海岸","tier":"经济","price":"¥180-350 / 晚","desc":"西海岸核心商圈，实惠。","lat":35.952,"lng":120.19},{"name":"如家酒店金沙滩店","area":"西海岸","tier":"经济","price":"¥180-360 / 晚","desc":"近金沙滩，玩水方便。","lat":35.963,"lng":120.245},{"name":"维也纳酒店西海岸店","area":"西海岸","tier":"舒适","price":"¥300-580 / 晚","desc":"长江路商圈，品质稳定。","lat":35.95,"lng":120.195},{"name":"桔子酒店西海岸店","area":"西海岸","tier":"舒适","price":"¥320-620 / 晚","desc":"近唐岛湾，设计感中端。","lat":35.947,"lng":120.188},{"name":"智选假日西海岸店","area":"西海岸","tier":"舒适","price":"¥320-600 / 晚","desc":"IHG旗下，位置便利。","lat":35.955,"lng":120.205},{"name":"7天酒店西海岸店","area":"西海岸","tier":"经济","price":"¥150-280 / 晚","desc":"长江路商圈，经济选择。","lat":35.949,"lng":120.192},{"name":"宜必思酒店西海岸店","area":"西海岸","tier":"经济","price":"¥170-320 / 晚","desc":"国际连锁品质，实惠。","lat":35.951,"lng":120.186},{"name":"白玉兰酒店西海岸店","area":"西海岸","tier":"经济","price":"¥170-320 / 晚","desc":"西海岸实惠之选。","lat":35.954,"lng":120.198},{"name":"亚朵酒店东方影都店","area":"西海岸","tier":"舒适","price":"¥420-800 / 晚","desc":"近东方影都星光岛，文艺设计。","lat":35.902,"lng":120.055},{"name":"锦江之星长江路店","area":"西海岸","tier":"经济","price":"¥160-300 / 晚","desc":"西海岸核心区，干净实惠。","lat":35.953,"lng":120.193},{"name":"喆啡酒店西海岸店","area":"西海岸","tier":"舒适","price":"¥350-680 / 晚","desc":"咖啡主题设计酒店，近唐岛湾。","lat":35.948,"lng":120.19},{"name":"青岛银沙滩温德姆酒店","area":"西海岸","tier":"高档","price":"¥500-1100 / 晚","desc":"银沙滩旁，人少安静，度假氛围好。","lat":35.942,"lng":120.215}];
+window.__ROUTES__ = [{"group":"老城人文","name":"老城人文徒步线","sub":"红瓦绿树 · 老城漫步","days":"约6小时","mode":"全程步行","desc":"用双脚丈量青岛百年开埠史，从栈桥出发沿中山路深入老城腹地，教堂、总督府、信号山一路串联，最后回到海岸边收尾。","stops":["栈桥","中山路","劈柴院","天主教堂","总督府旧址","信号山公园","大学路网红墙","小鱼山公园","鲁迅公园"]},{"group":"老城人文","name":"老城海岸线","sub":"从栈桥走到汇泉湾","days":"约1天","mode":"步行+公交","desc":"沿着老城最美的一段海岸线走：从栈桥、小青岛开始，经海军博物馆与鲁迅公园，再沿汇泉湾一路到八大关，看尽老城海景精华。","stops":["栈桥","小青岛","海军博物馆","鲁迅公园","第一海水浴场","第二海水浴场","八大关"]},{"group":"老城人文","name":"啤酒与里院文化线","sub":"百年麦香 · 市井烟火","days":"约1天","mode":"步行+地铁","desc":"从登州路啤酒博物馆出发，打卡台东夜市，再钻进广兴里里院感受老青岛市井，最后经中山路、劈柴院回到栈桥吹海风。","stops":["青岛啤酒博物馆","台东步行街","广兴里里院","中山路","劈柴院","栈桥"]},{"group":"老城人文","name":"老城名人故居线","sub":"沿着文人的足迹","days":"约6小时","mode":"步行+公交","desc":"信号山周边集中了康有为、老舍、沈从文等名人的故居，串起总督府、大学路、小鱼山，感受青岛的文学底色与山海城景。","stops":["总督府旧址","信号山公园","大学路网红墙","小鱼山公园","太平角","小青岛"]},{"group":"东部海岸","name":"浮山湾滨海线","sub":"现代青岛的海岸名片","days":"约1天","mode":"步行+公交","desc":"从五四广场出发，沿浮山湾一路向东：奥帆、情人坝、燕儿岛、小麦岛，最后在石老人浴场看一场日落收尾。","stops":["五四广场","奥帆中心","情人坝","燕儿岛公园","小麦岛公园","雕塑园","石老人海水浴场"]},{"group":"东部海岸","name":"奥帆夜景线","sub":"灯光秀与夜海","days":"约4小时","mode":"步行","desc":"傍晚从五四广场看灯光秀，沿着港湾走到情人坝吹海风，最后转场台东步行街吃夜宵，一条线看尽青岛的夜晚。","stops":["五四广场","奥帆中心","情人坝","浮山湾夜景","台东步行街"]},{"group":"东部海岸","name":"海洋亲子线","sub":"海底世界一日游","days":"约1天","mode":"公交+地铁","desc":"专为亲子设计的海洋主题线：极地海洋世界看白鲸表演，海底世界钻海底隧道，再顺路打卡奥帆与雕塑园，劳逸结合。","stops":["极地海洋世界","青岛海底世界","奥帆中心","五四广场","雕塑园","石老人海水浴场"]},{"group":"东部海岸","name":"海岸摄影漫步线","sub":"寻找最佳机位","days":"约1天","mode":"步行+公交","desc":"一条为摄影爱好者设计的海岸线：第三海水浴场的城市倒影、太平角的礁石落日、八大关的秋日林荫，处处是景。","stops":["第三海水浴场","太平角","第二海水浴场","八大关","小青岛","栈桥"]},{"group":"崂山山海","name":"崂山经典一日线","sub":"海上第一名山","days":"约1天","mode":"自驾/包车","desc":"崂山精华一日：太清宫看道教祖庭，巨峰登顶观云海，北九水溯溪，华严寺听禅，把海上仙山的四副面孔一次看完。","stops":["崂山太清宫","崂山巨峰","北九水","华严寺"]},{"group":"崂山山海","name":"太清问道线","sub":"山海之间的道观","days":"约6小时","mode":"公交+索道","desc":"以道教文化为主线：太清宫细品千年道观，乘太清索道上山俯瞰山海，华严寺顺路礼佛，节奏舒缓适合中老年游客。","stops":["崂山太清宫","崂山巨峰","华严寺","崂山仰口"]},{"group":"崂山山海","name":"仰口山海线","sub":"奇峰碧海两相宜","days":"约1天","mode":"公交+索道","desc":"从仰口登山看狮子峰、觅天洞，下山在海湾沙滩戏水，顺路华严寺、太清宫，把崂山东麓的山海奇景走个遍。","stops":["崂山仰口","华严寺","崂山太清宫","北九水"]},{"group":"崂山山海","name":"北九水避暑线","sub":"溪潭叠瀑 · 清凉一夏","days":"约6小时","mode":"公交","desc":"夏天最舒服的崂山打开方式：沿九水十八潭溯溪而上，潭水清澈见底，瀑布声与蝉鸣相伴，是天然的大氧吧。","stops":["北九水","华严寺","崂山太清宫","崂山仰口"]},{"group":"西海岸","name":"金沙滩度假线","sub":"躺平式海边度假","days":"约1天","mode":"自驾/打车","desc":"西海岸度假首选：上午金沙滩玩水，午后银沙滩发呆，傍晚唐岛湾骑行看日落，晚上红树林灯光里散步，一整天不赶路。","stops":["金沙滩","银沙滩","唐岛湾","红树林","城市阳台"]},{"group":"西海岸","name":"影视与海岸线","sub":"电影之都巡礼","days":"约1天","mode":"自驾","desc":"打卡东方影都星光岛，钻进红树林拍欧式风情，再到金沙滩踩浪，最后从唐岛湾码头远眺灵山岛，很出片的一条线。","stops":["东方影都","红树林","金沙滩","唐岛湾","灵山岛"]},{"group":"西海岸","name":"琅琊台访古线","sub":"秦始皇的观海台","days":"约1天","mode":"自驾","desc":"历史底蕴最深的一条：登琅琊台寻秦始皇遗迹，大珠山看杜鹃花海（春季），回程城市阳台、唐岛湾放松收尾。","stops":["琅琊台","大珠山","城市阳台","唐岛湾"]},{"group":"西海岸","name":"海岛深度线","sub":"灵山岛一日","days":"约1天","mode":"船+徒步","desc":"乘船上北方第一高岛灵山岛，徒步渔村与礁石海岸，看原生态海岛生活，返程顺路金沙滩与东方影都。","stops":["灵山岛","金沙滩","东方影都","红树林"]},{"group":"城市烟火","name":"台东美食夜游线","sub":"本地人的深夜食堂","days":"约4小时","mode":"步行","desc":"傍晚钻进台东步行街从街头吃到街尾，再去啤酒博物馆喝一杯原浆，回程逛逛广兴里，烟火气拉满的夜游线。","stops":["台东步行街","青岛啤酒博物馆","广兴里里院","劈柴院"]},{"group":"城市烟火","name":"市北文化一日线","sub":"炮台与老街","days":"约6小时","mode":"公交","desc":"上午登青岛山看一战遗址炮台，下午台东觅食、广兴里看里院，傍晚啤酒博物馆收尾，读懂青岛的市北故事。","stops":["青岛山炮台","台东步行街","广兴里里院","青岛啤酒博物馆"]},{"group":"城市烟火","name":"老城烟火线","sub":"老街里的青岛味","days":"约5小时","mode":"步行","desc":"从劈柴院吃到中山路，钻进广兴里看里院生活，最后在天主教堂前看落日，一条线吃遍逛遍老城烟火。","stops":["劈柴院","中山路","广兴里里院","天主教堂","栈桥"]},{"group":"亲子休闲","name":"亲子海洋乐园线","sub":"海豚与白鲸的约定","days":"约1天","mode":"公交+打车","desc":"上午极地海洋世界看白鲸海豚表演，下午海底世界钻隧道，傍晚奥帆中心放风、燕儿岛挖沙，孩子玩得尽兴大人不累。","stops":["极地海洋世界","青岛海底世界","奥帆中心","燕儿岛公园","小麦岛公园"]},{"group":"亲子休闲","name":"亲子自然线","sub":"公园与沙滩的悠闲日","days":"约1天","mode":"公交","desc":"上午中山公园喂鸽子、坐索道，午后八大关骑行看老别墅，傍晚到第一、第二海水浴场玩沙踩水，轻松不赶的亲子日。","stops":["中山公园","八大关","第二海水浴场","第一海水浴场","太平角"]},{"group":"日出日落","name":"石老人日出线","sub":"海上仙山的黎明","days":"约4小时","mode":"打车+步行","desc":"凌晨赶到石老人海水浴场等海上日出，随后去雕塑园、小麦岛沐浴晨光，最后在崂山仰口看山海，一天从最美开始。","stops":["石老人海水浴场","雕塑园","小麦岛公园","崂山仰口"]},{"group":"日出日落","name":"浮山湾夜景摄影线","sub":"璀璨青岛之夜","days":"约4小时","mode":"步行+地铁","desc":"傍晚第三海水浴场拍城市倒影，入夜后五四广场看灯光秀，情人坝灯塔下吹海风，最后台东吃夜宵，夜景摄影一条龙。","stops":["第三海水浴场","五四广场","浮山湾夜景","情人坝","台东步行街"]},{"group":"老城人文","name":"老城深度徒步线","sub":"一砖一瓦都是故事","days":"约1天","mode":"全程步行","desc":"用一整天把老城走透：栈桥出发，教堂、总督府、信号山、大学路、小鱼山一路向南，最后广兴里收尾，深度慢游。","stops":["栈桥","天主教堂","总督府旧址","信号山公园","大学路网红墙","小鱼山公园","广兴里里院"]}];
+</script>
+<script>
+/* ================= 数据与工具 ================= */
+const SPOTS = window.__SPOTS__, HOTELS = window.__HOTELS__, ROUTES = window.__ROUTES__;
+const SPOT_BY_ID = {}; SPOTS.forEach(s => SPOT_BY_ID[s.id] = s);
+const AREA_ORDER = ['市南','市北','崂山','李沧','城阳','西海岸'];
+const TIER_ORDER = ['奢华','高档','舒适','经济'];
+const AREA_COLOR = {'市南':'#D35400','市北':'#8E44AD','崂山':'#27AE60','李沧':'#16A085','城阳':'#2C3E50','西海岸':'#2980B9'};
+const SPOT_COLOR = {'老城西区':'#C0392B','东部海岸':'#1B6CA8','崂山':'#27AE60','市北':'#8E44AD','西海岸':'#E67E22'};
+const GROUP_ORDER = ['老城人文','东部海岸','崂山山海','西海岸','城市烟火','亲子休闲','日出日落'];
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
-/* ===== 酒店数据（20 家，覆盖六大片区） ===== */
-const HOTELS = [
-  {id:'regis',      name:'青岛瑞吉酒店',       area:'east',    lng:120.3745, lat:36.0605, level:'奢华', price:'¥1600-4000', note:'369米海天中心云端，360°全景落地窗，浮山湾C位，楼下即是五四广场商圈。'},
-  {id:'haitian',    name:'青岛海天大酒店',     area:'east',    lng:120.3705, lat:36.058,  level:'豪华', price:'¥800-1500',  note:'国信旗下老牌五星，东海西路一线海景，距八大关与第三海水浴场都不远。'},
-  {id:'shangrila',  name:'青岛香格里拉大酒店', area:'east',    lng:120.3785, lat:36.061,  level:'豪华', price:'¥900-1600',  note:'五四广场商圈核心，地铁3号线直达，逛街看海两相宜。'},
-  {id:'westin',     name:'青岛威斯汀酒店',     area:'east',    lng:120.3805, lat:36.0618, level:'豪华', price:'¥800-1500',  note:'香港中路CBD高层，俯瞰五四广场与浮山湾，商务出行的稳妥之选。'},
-  {id:'intercont',  name:'青岛海尔洲际酒店',   area:'east',    lng:120.389,  lat:36.0595, level:'奢华', price:'¥1000-2000', note:'奥帆中心C位，部分客房浴缸里就能看灯光秀，青岛唯一的海上宴会厅所在地。'},
-  {id:'crowne',     name:'青岛颐中皇冠假日酒店',area:'east',   lng:120.376,  lat:36.061,  level:'豪华', price:'¥700-1200',  note:'香港中路老牌国际五星，步行可达五四广场与奥帆中心。'},
-  {id:'holiday',    name:'青岛中心假日酒店',   area:'east',    lng:120.383,  lat:36.062,  level:'豪华', price:'¥600-1000',  note:'徐州路地铁口，五四广场商圈性价比之选，商务与度假两相宜。'},
-  {id:'huanghai',   name:'青岛黄海饭店',       area:'east',    lng:120.365,  lat:36.062,  level:'舒适', price:'¥400-700',   note:'香港西路老牌饭店，向东可逛五四广场，向西步行可达八大关。'},
-  {id:'mgm',        name:'青岛美高梅华府酒店', area:'laoshan', lng:120.445,  lat:36.084,  level:'奢华', price:'¥1200-2500', note:'上实中心51层云端海景早餐，东方美学设计，近石老人与崂山。'},
-  {id:'hyatt',      name:'青岛鲁商凯悦酒店',   area:'laoshan', lng:120.447675,lat:36.074511,level:'豪华', price:'¥900-1700', note:'正对石老人海滨，山海景观房推窗见海，看海上日出不必出门。'},
-  {id:'garden',     name:'青岛海景花园大酒店', area:'laoshan', lng:120.43,   lat:36.075,  level:'豪华', price:'¥800-1500',  note:'东海东路临海老牌酒店，园景与海景兼备，近极地海洋世界。'},
-  {id:'huiquan',    name:'青岛汇泉王朝大酒店', area:'west',    lng:120.338,  lat:36.0575, level:'舒适', price:'¥500-900',   note:'第一海水浴场旁的资深海景酒店，出门就是沙滩，性价比高。'},
-  {id:'prince',     name:'青岛栈桥王子饭店',   area:'west',    lng:120.315,  lat:36.0635, level:'舒适', price:'¥400-800',   note:'栈桥边的百年欧式建筑，推窗见海，老城情怀拉满，步行可逛老城核心。'},
-  {id:'hilton',     name:'青岛金沙滩希尔顿酒店',area:'coast',  lng:120.236857,lat:35.957047,level:'度假', price:'¥700-1400', note:'西海岸金沙滩畔，步行可达“亚洲第一滩”，带私属沙滩与亲子设施。'},
-  {id:'dtown',      name:'青岛东方影都希尔顿逸林',area:'coast',lng:120.115267,lat:35.899090,level:'豪华', price:'¥600-1100', note:'东方影都与星光岛旁，电影主题街区环绕，适合度假遛娃。'},
-  {id:'redwood',    name:'青岛红树林度假世界', area:'coast',   lng:120.100,  lat:35.915,  level:'度假', price:'¥800-1600',  note:'灵山湾畔大型度假综合体，自带沙滩、温泉与亲子乐园。'},
-  {id:'coastwestin',name:'青岛西海岸威斯汀酒店',area:'coast',  lng:120.09,   lat:35.91,   level:'豪华', price:'¥700-1300',  note:'西海岸新区CBD，滨海大道一线海景，近唐岛湾。'},
-  {id:'lemeridien', name:'青岛富力艾美酒店',   area:'shibei',  lng:120.369,  lat:36.0875, level:'豪华', price:'¥700-1300', note:'市北CBD延吉路商圈，离台东夜市近，性价比之选，地铁出行方便。'},
-  {id:'sheraton',   name:'青岛李沧绿城喜来登',  area:'north',   lng:120.432,  lat:36.178,  level:'豪华', price:'¥600-1100',  note:'李沧核心商圈，地铁便利，前往崂山北线与主城都方便。'},
-  {id:'holidayinn', name:'青岛景园假日酒店',   area:'north',   lng:120.380,  lat:36.310,  level:'舒适', price:'¥400-800',   note:'城阳流亭区域，适合机场转机或北部出行的旅客。'}
-];
-const HOTEL_MAP = Object.fromEntries(HOTELS.map(h => [h.id, h]));
+let selectedHotel = null, selectedRoute = null;
+let areaTab = '全部', tierTab = '全部', searchKw = '';
+let hotelMarkers = [], spotMarkers = [], routeLine = null, hotelRouteLine = null, numBadges = [];
+let map = null, hotelLayer = null;
 
-/* ===== 区域与全部路线 ===== */
-const AREAS = {
-  west:    {label:'市南 · 老城西区', desc:'栈桥、信号山、八大关'},
-  east:    {label:'市南 · 东部海岸', desc:'五四广场、奥帆、小麦岛'},
-  laoshan: {label:'崂山 · 山海之间', desc:'石老人、崂山风景区'},
-  coast:   {label:'西海岸新区',      desc:'金沙滩、唐岛湾'},
-  shibei:  {label:'市北 · 城市烟火', desc:'台东、啤酒博物馆'},
-  north:   {label:'城阳 · 李沧',     desc:'机场转机、北线出行'}
-};
-
-const ROUTE_GROUPS = [
-  {key:'west',    title:'老城人文', desc:'红瓦绿树，慢走老城', routes:[
-    {id:'w1', name:'老城人文徒步线', theme:'红瓦绿树 · 老城漫步', dur:'约6小时', trans:'全程步行', spots:['zhanqiao','cathedral','governor','xinhaoshan','daxuelu','xiaoyushan','luxun'], tip:'节奏轻松，街巷里藏着小馆与咖啡馆，边走边停很惬意。'},
-    {id:'w2', name:'老城海岸线',     theme:'从栈桥走向汇泉湾',   dur:'约1天',   trans:'步行+公交', spots:['zhanqiao','luxun','undersea','xiaoyushan','beach1','badaguan'], tip:'上午走老城，午后在海水浴场歇脚，傍晚的八大关尤其出片。'},
-    {id:'w3', name:'全城精华一日线', theme:'青岛地标一网打尽',   dur:'约1天',   trans:'打车+地铁', spots:['zhanqiao','badaguan','wusi','aofan','polar','shilaoren'], tip:'覆盖栈桥到石老人的全线精华，适合第一次来青岛的朋友。'}
-  ]},
-  {key:'east',    title:'东部海岸', desc:'浮山湾畔，城市与海', routes:[
-    {id:'e1', name:'海湾环线',       theme:'浮山湾畔轻骑行',     dur:'约半天',  trans:'步行/骑行', spots:['wusi','aofan','xiaomaidao'], tip:'五四广场出发沿滨海步道一路向东，小麦岛看日落收尾，节奏轻快。'},
-    {id:'e2', name:'山海度假线',     theme:'从城市奔向崂山',     dur:'约1天',   trans:'自驾/打车', spots:['polar','xiaomaidao','shilaoren','laoshan'], tip:'上午海洋馆亲子时光，下午石老人戏水，时间充裕可深入崂山太清。'},
-    {id:'e3', name:'老城经典线',     theme:'反向走回红瓦老城',   dur:'约1天',   trans:'公交+打车', spots:['badaguan','beach1','xiaoyushan','xinhaoshan','zhanqiao'], tip:'从东部出发向西，把八大关、小鱼山、信号山一次走完，傍晚栈桥吹海风。'}
-  ]},
-  {key:'laoshan', title:'崂山山海', desc:'海上第一名山', routes:[
-    {id:'l1', name:'崂山问道一日线', theme:'海上第一名山',       dur:'约1天',   trans:'景区交通', spots:['laoshan','yangkou'], tip:'太清宫看道观山海，仰口登高望远，两区联票一天走完，需穿舒适登山鞋。'},
-    {id:'l2', name:'石老人日出海岸线',theme:'追一场海上日出',    dur:'约半天',  trans:'打车/公交', spots:['shilaoren','polar','xiaomaidao','wusi'], tip:'清晨石老人看日出，白天海洋馆+小麦岛，下午回到五四广场商圈。'},
-    {id:'l3', name:'山海精华环线',   theme:'日出·仙山·海岛',    dur:'约1天',   trans:'自驾/打车', spots:['shilaoren','laoshan','polar','xiaomaidao'], tip:'把崂山与海岸精华串联，强度适中，可拆成两天。'}
-  ]},
-  {key:'coast',   title:'西海岸',   desc:'沙滩与摩天轮之夜', routes:[
-    {id:'c1', name:'金沙滩度假线',   theme:'亚洲第一滩慢时光',  dur:'约半天',  trans:'步行/骑行', spots:['golden','silver','tangdaowan'], tip:'上午金沙滩玩水，午后银沙滩发呆，黄昏唐岛湾看摩天轮亮灯。'},
-    {id:'c2', name:'跨海都市线',     theme:'穿过胶州湾看老城',  dur:'约1天',   trans:'自驾过隧道', spots:['golden','zhanqiao','badaguan','wusi'], tip:'过胶州湾隧道进主城，栈桥、八大关、五四广场一条线，傍晚返回西海岸。'},
-    {id:'c3', name:'西海岸夜色线',   theme:'沙滩与摩天轮之夜',  dur:'约半天',  trans:'打车',     spots:['golden','tangdaowan'], tip:'下午金沙滩玩水，晚上唐岛湾琴岛之眼摩天轮，配一顿海鲜大餐收尾。'}
-  ]},
-  {key:'shibei',  title:'城市烟火', desc:'啤酒与台东夜市', routes:[
-    {id:'s1', name:'烟火美食线',     theme:'啤酒与台东夜市',    dur:'约半天',  trans:'地铁/步行', spots:['taidong','beer'], tip:'傍晚从台东夜市吃起，再去啤酒博物馆喝一杯原浆，市北之夜的正确打开方式。'},
-    {id:'s2', name:'全城精华线',     theme:'青岛地标一网打尽',  dur:'约1天',   trans:'地铁+打车', spots:['beer','zhanqiao','badaguan','wusi','aofan'], tip:'从啤酒博物馆出发一路向南，把最经典的地标串成一条顺路的长线。'},
-    {id:'s3', name:'老城海岸线',     theme:'从栈桥走到八大关',  dur:'约1天',   trans:'公交+步行', spots:['zhanqiao','luxun','undersea','xiaoyushan','badaguan'], tip:'经典海岸徒步段，配上海底世界的亲子一站，适合家庭出行。'}
-  ]}
-];
-const ALL_ROUTES = ROUTE_GROUPS.flatMap(g => g.routes);
-const ROUTE_MAP = Object.fromEntries(ALL_ROUTES.map(r => [r.id, r]));
-
-/* ===== 状态 ===== */
-const store = { hotelId:null, routeId:null, filter:'all', query:'' };
-
-/* ===== 工具 ===== */
-const $ = id => document.getElementById(id);
-const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-
-/* ===== 渲染：酒店（搜索 + 筛选） ===== */
-function renderTabs(){
-  const tabs = [['all','全部']].concat(Object.entries(AREAS).map(([k,v])=>[k, v.label]));
-  $('hotelTabs').innerHTML = tabs.map(([k,label]) =>
-    `<button class="tab ${store.filter===k?'active':''}" data-filter="${k}">${esc(label)}</button>`
-  ).join('');
-}
-function filteredHotels(){
-  const q = store.query.trim().toLowerCase();
-  return HOTELS.filter(h => {
-    if(store.filter!=='all' && h.area!==store.filter) return false;
-    if(!q) return true;
-    const hay = (h.name + ' ' + (AREAS[h.area]?.label||'') + ' ' + h.level + ' ' + h.note).toLowerCase();
-    return hay.includes(q);
-  });
-}
-function renderHotels(){
-  const list = filteredHotels();
-  $('hotelCount').innerHTML = list.length===HOTELS.length
-    ? `共 <b>${HOTELS.length}</b> 家酒店可选`
-    : `找到 <b>${list.length}</b> 家酒店`;
-  if(!list.length){
-    $('hotelGrid').innerHTML = `<div class="empty-hint">没有匹配的酒店，换个关键词试试，例如「海景」「崂山」「度假」。</div>`;
-    return;
-  }
-  $('hotelGrid').innerHTML = list.map(h => {
-    const sel = store.hotelId===h.id;
-    return `<article class="hotel-card ${sel?'selected':''}" data-hotel="${h.id}" tabindex="0" role="button" aria-pressed="${sel}">
-      <span class="mark">${sel?'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5 10 18.5 20 6.5"/></svg>':''}</span>
-      <h3>${esc(h.name)}</h3>
-      <div class="tags">
-        <span class="chip area">${esc(AREAS[h.area].label)}</span>
-        <span class="chip level">${esc(h.level)}</span>
-      </div>
-      <div class="price"><b>${esc(h.price)}</b> / 晚</div>
-      <p class="note">${esc(h.note)}</p>
-    </article>`;
-  }).join('');
-}
-
-/* ===== 渲染：路线（全部分组展示，独立选择） ===== */
-function renderRoutes(){
-  const area = $('routeArea');
-  let html = `<div class="route-area-head"><p>共 <b>${ALL_ROUTES.length}</b> 条路线 · 按主题分组 · 任选一条${store.hotelId ? '，将从所选酒店出发连线' : ''}</p></div>`;
-  html += ROUTE_GROUPS.map(g => {
-    const cards = g.routes.map(r => {
-      const sel = store.routeId===r.id;
-      return `<article class="route-card ${sel?'selected':''}" data-route="${r.id}" tabindex="0" role="button" aria-pressed="${sel}">
-        <div class="r-top">
-          <div>
-            <h3>${esc(r.name)}</h3>
-            <div class="theme">${esc(r.theme)}</div>
-          </div>
-          ${sel?'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1B6CA8" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5 10 18.5 20 6.5"/></svg>':''}
-        </div>
-        <div class="meta">
-          <span><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>${esc(r.dur)}</span>
-          <span><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h13a4 4 0 0 1 0 8H8"/><path d="m7 11-4 4 4 4"/></svg>${esc(r.trans)}</span>
-          <span><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>${r.spots.length} 站</span>
-        </div>
-        <div class="route-spots">${r.spots.map((sid,i)=>`<span class="spot-chip"><b>${i+1}</b>${esc(SPOT_MAP[sid].name)}</span>`).join('')}</div>
-      </article>`;
-    }).join('');
-    return `<div class="route-group">
-      <div class="route-group-title">${esc(g.title)}<span class="rg-desc">${esc(g.desc)}</span></div>
-      <div class="route-grid">${cards}</div>
-    </div>`;
-  }).join('');
-  area.innerHTML = html;
-}
-
-/* ===== 渲染：行程列表 ===== */
-function renderItinerary(){
-  const route = store.routeId ? ROUTE_MAP[store.routeId] : null;
-  if(!route){
-    $('itinHead').innerHTML = `<div class="rname">行程安排</div><div class="rsum">选择一条路线，这里会按顺序列出每个景点</div>`;
-    $('itinList').innerHTML = `<div class="itin-empty">选择酒店与路线后，<br>地图与行程将同步呈现。</div>`;
-    return;
-  }
-  const hotel = store.hotelId ? HOTEL_MAP[store.hotelId] : null;
-  const hotelName = hotel ? `从「${hotel.name}」出发` : '按路线顺序游览';
-  $('itinHead').innerHTML = `<div class="rname">${esc(route.name)}</div><div class="rsum">${esc(hotelName)} · ${route.spots.length} 站 · ${esc(route.dur)} · ${esc(route.trans)}</div>`;
-  $('itinList').innerHTML = route.spots.map((sid,i)=>{
-    const s = SPOT_MAP[sid];
-    return `<div class="itin-item" data-spot="${sid}" tabindex="0" role="button">
-      <div class="idx">${i+1}</div>
-      <div class="body">
-        <div class="nm">${esc(s.name)}<span class="mini">${esc(s.time)}</span><span class="mini">${esc(s.ticket)}</span></div>
-        <div class="ds">${esc(s.desc)}</div>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-/* ===== 地图（Leaflet + 高德/OSM 图层） ===== */
-let map = null;
-let spotMarkers = {};
-let hotelMarkers = {};
-let routeLayers = [];
-
-const AREA_COLORS = {
-  west:    '#E0674F',
-  east:    '#2E8FC1',
-  laoshan: '#4C8A6C',
-  coast:   '#E3A34C',
-  shibei:  '#7E6BA8'
-};
-
-function spotPopupHtml(s){
-  return `<div class="p-name">${esc(s.name)}</div>
-    <div class="p-meta">${esc(s.time)} · ${esc(s.ticket)} · ${esc(s.tag)}</div>
-    <div class="p-desc">${esc(s.desc)}</div>`;
-}
-function hotelPopupHtml(h){
-  return `<div class="p-name">${esc(h.name)}</div>
-    <div class="p-meta">${esc(AREAS[h.area].label)} · ${esc(h.level)} · ${esc(h.price)}/晚</div>
-    <div class="p-desc">${esc(h.note)}</div>`;
-}
-
+/* ================= 地图初始化 ================= */
 function initMap(){
-  // 图层：高德街道 / 高德卫星（影像+标注）/ OSM
-  const gaode = L.tileLayer('https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}', {
-    subdomains:'1234', maxZoom:18, attribution:'© 高德地图'
-  });
-  const gaodeSat = L.layerGroup([
-    L.tileLayer('https://webst0{s}.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}', {subdomains:'1234', maxZoom:18}),
-    L.tileLayer('https://webst0{s}.is.autonavi.com/appmaptile?style=8&x={x}&y={y}&z={z}', {subdomains:'1234', maxZoom:18, opacity:.85})
+  map = L.map('map', {zoomControl:true}).setView([36.09,120.36], 11);
+
+  const gaode = L.tileLayer('https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}',
+    {subdomains:['1','2','3','4'], maxZoom:18, attribution:'© 高德地图'});
+  const sat = L.layerGroup([
+    L.tileLayer('https://webst0{s}.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}',
+      {subdomains:['1','2','3','4'], maxZoom:18, attribution:'© 高德地图'}),
+    L.tileLayer('https://webst0{s}.is.autonavi.com/appmaptile?style=8&x={x}&y={y}&z={z}',
+      {subdomains:['1','2','3','4'], maxZoom:18, opacity:.85})
   ]);
   const osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:19, attribution:'© OpenStreetMap'});
+  gaode.addTo(map);
+  L.control.layers({'高德街道':gaode,'高德卫星':sat,'OSM':osm}, null, {position:'topright'}).addTo(map);
 
-  map = L.map('map', {center:[36.09, 120.40], zoom:12, layers:[gaode]});
-  L.control.layers({'高德街道': gaode, '高德卫星': gaodeSat, 'OSM 街道': osm}, null, {position:'topright'}).addTo(map);
-
-  // 景点标记
-  SPOTS.forEach(s => {
-    const m = L.circleMarker([s.lat, s.lng], {
-      radius:7, color:'#fff', weight:2, fillColor: AREA_COLORS[s.area] || '#5B6E78', fillOpacity:.95
-    }).bindPopup(spotPopupHtml(s));
-    m.on('click', () => { map.setView([s.lat, s.lng], 14); });
-    m.addTo(map);
-    spotMarkers[s.id] = m;
-  });
-
-  // 酒店标记（金色水滴 pin）
-  HOTELS.forEach(h => {
-    const m = L.marker([h.lat, h.lng], {icon: hotelIcon(h.id), riseOnHover:true})
-      .bindPopup(hotelPopupHtml(h));
-    m.addTo(map);
-    hotelMarkers[h.id] = m;
-  });
-
-  updateMap();
+  renderSpots();
+  renderHotelMarkers();
+  map.on('click', () => {});
 }
 
-function hotelIcon(hid){
-  const h = HOTEL_MAP[hid];
-  const sel = store.hotelId===hid;
-  return L.divIcon({
-    className:'hotel-pin-wrap',
-    html:`<div class="hotel-pin ${sel?'sel':''}"></div><div class="hotel-pin-label">${esc(h.name)}</div>`,
-    iconSize:[36,46], iconAnchor:[18,44], popupAnchor:[0,-40]
+function renderSpots(){
+  SPOTS.forEach(s => {
+    const m = L.circleMarker([s.lat,s.lng], {
+      radius:7, color:'#fff', weight:2, fillColor:SPOT_COLOR[s.area]||'#1B6CA8', fillOpacity:.95
+    }).addTo(map);
+    m.bindTooltip(s.name, {direction:'top', offset:[0,-6]});
+    m.bindPopup(`
+      <div class="sp-pop">
+        <img src="${s.img}" alt="${esc(s.name)}" loading="lazy">
+        <div class="nm">${esc(s.name)}</div>
+        <div class="mt">${esc(s.time)} · ${esc(s.fee)} · ${esc(s.area)}</div>
+        <div class="ds">${esc(s.desc)}</div>
+      </div>`);
+    m.on('click', () => map.flyTo([s.lat,s.lng], Math.max(map.getZoom(),14)));
+    spotMarkers.push({m, s});
   });
 }
 
-function updateMap(){
-  // 刷新酒店图标高亮
+function renderHotelMarkers(){
+  hotelLayer = L.layerGroup().addTo(map);
   HOTELS.forEach(h => {
-    hotelMarkers[h.id].setIcon(hotelIcon(h.id));
+    const c = AREA_COLOR[h.area];
+    const icon = L.divIcon({className:'hotel-pin-wrap', html:
+      `<div class="hotel-pin" style="background:${c}"><span class="lab">${esc(h.name)}</span></div>`});
+    const m = L.marker([h.lat,h.lng], {icon}).addTo(hotelLayer);
+    m.bindPopup(`
+      <div class="hp-pop">
+        <div class="nm">${esc(h.name)}</div>
+        <div class="mt">${esc(h.area)} · ${esc(h.tier)}</div>
+        <div class="pr">${esc(h.price)}</div>
+        <div class="ds">${esc(h.desc)}</div>
+      </div>`);
+    m.on('click', () => { selectHotel(h); });
+    hotelMarkers.push({m, h});
   });
+}
 
-  // 清除旧路线图层
-  routeLayers.forEach(l => l.remove());
-  routeLayers = [];
+/* ================= 酒店筛选 ================= */
+function buildHotelFilters(){
+  const areaCounts = {}; HOTELS.forEach(h => areaCounts[h.area]=(areaCounts[h.area]||0)+1);
+  const tabs = $('#areaTabs');
+  tabs.innerHTML = '<button class="tab on" data-area="全部">全部<span class="n">'+HOTELS.length+'</span></button>' +
+    AREA_ORDER.map(a => `<button class="tab" data-area="${a}">${a}<span class="n">${areaCounts[a]||0}</span></button>`).join('');
+  tabs.addEventListener('click', e => {
+    const b = e.target.closest('.tab'); if(!b) return;
+    tabs.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+    b.classList.add('on'); areaTab = b.dataset.area;
+    applyHotelFilter(true);
+  });
+  const tierCounts = {}; HOTELS.forEach(h => tierCounts[h.tier]=(tierCounts[h.tier]||0)+1);
+  const chips = $('#tierChips');
+  chips.innerHTML = '<button class="chip on" data-tier="全部">全部档次</button>' +
+    TIER_ORDER.map(t => `<button class="chip" data-tier="${t}">${t}<span class="n">${tierCounts[t]||0}</span></button>`).join('');
+  chips.addEventListener('click', e => {
+    const b = e.target.closest('.chip'); if(!b) return;
+    chips.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
+    b.classList.add('on'); tierTab = b.dataset.tier;
+    applyHotelFilter(true);
+  });
+  $('#hotelSearch').addEventListener('input', e => {
+    searchKw = e.target.value.trim();
+    applyHotelFilter(true);
+  });
+}
 
-  // 路线景点高亮 / 淡化
-  const route = store.routeId ? ROUTE_MAP[store.routeId] : null;
-  const routeSet = route ? new Set(route.spots) : new Set();
-  SPOTS.forEach(s => {
-    const on = routeSet.has(s.id);
-    const m = spotMarkers[s.id];
-    m.setRadius(on ? 11 : 7);
-    m.setStyle({fillOpacity: routeSet.size ? (on ? .98 : .2) : .95, weight: on ? 3 : 2});
-    if(on) m.bringToFront();
-    if(on){
-      m.bindTooltip(String(Array.from(route.spots).indexOf(s.id)+1), {permanent:true, direction:'center', className:'route-num'});
+function filterHotels(){
+  const kw = searchKw.toLowerCase();
+  return HOTELS.filter(h => {
+    if(areaTab !== '全部' && h.area !== areaTab) return false;
+    if(tierTab !== '全部' && h.tier !== tierTab) return false;
+    if(kw && !(h.name.toLowerCase().includes(kw) || h.area.includes(kw) || h.tier.includes(kw) || h.desc.toLowerCase().includes(kw))) return false;
+    return true;
+  });
+}
+
+let shownCount = 12;
+function applyHotelFilter(reset){
+  if(reset) shownCount = 12;
+  const list = filterHotels();
+  $('#hotelCount').innerHTML = `共找到 <b>${list.length}</b> 家酒店${searchKw ? `（关键词「${esc(searchKw)}」）` : ''}`;
+  const grid = $('#hotelGrid');
+  grid.innerHTML = list.slice(0, shownCount).map(h => {
+    const tc = {奢华:'tag-lux',高档:'tag-high',舒适:'tag-comf',经济:'tag-eco'}[h.tier];
+    return `<div class="hotel-card${selectedHotel && selectedHotel.name===h.name ? ' selected':''}" data-name="${esc(h.name)}">
+      <span class="tag ${tc}">${h.tier}</span><span class="pin" style="background:${AREA_COLOR[h.area]}"></span>
+      <h3>${esc(h.name)}</h3>
+      <div class="meta">${esc(h.area)}片区 · ${esc(h.price)}</div>
+      <div class="desc">${esc(h.desc)}</div>
+    </div>`;
+  }).join('');
+  grid.querySelectorAll('.hotel-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const h = HOTELS.find(x => x.name === card.dataset.name);
+      if(h) selectHotel(h);
+    });
+  });
+  $('#moreBtn').style.display = list.length > shownCount ? 'block' : 'none';
+  $('#moreBtn').textContent = `展开更多（共 ${list.length} 家）`;
+  updateHotelMarkers(list);
+}
+
+function selectHotel(h){
+  selectedHotel = h;
+  document.querySelectorAll('.hotel-card').forEach(c => c.classList.toggle('selected', c.dataset.name === h.name));
+  // 地图定位酒店
+  map.flyTo([h.lat, h.lng], Math.max(map.getZoom(), 12));
+  // 若已选路线，画酒店→首站连线
+  if(selectedRoute){
+    const first = SPOT_BY_ID[selectedRoute.stops[0]];
+    drawHotelRouteLine(h, first);
+  }
+  updateStatus();
+}
+
+function drawHotelRouteLine(h, spot){
+  if(hotelRouteLine) map.removeLayer(hotelRouteLine);
+  hotelRouteLine = L.polyline([[h.lat,h.lng],[spot.lat,spot.lng]], {color:'#C9A227', weight:2.5, dashArray:'6 6'}).addTo(map);
+}
+
+function updateHotelMarkers(list){
+  const inList = new Set(list.map(h => h.name));
+  const anyFilter = areaTab !== '全部' || tierTab !== '全部' || searchKw;
+  hotelMarkers.forEach(({m, h}) => {
+    if(!anyFilter){
+      m.setOpacity(.75);
+    } else if(inList.has(h.name)){
+      m.setOpacity(1); m.getElement() && m.getElement().classList.remove('dim');
     } else {
-      m.unbindTooltip();
+      m.setOpacity(.12);
     }
+    m.getElement() && m.getElement().classList.toggle('dim', !anyFilter ? false : !inList.has(h.name));
   });
+}
 
-  // 画路线连线
-  if(route){
-    const hotel = store.hotelId ? HOTEL_MAP[store.hotelId] : null;
-    const pts = [];
-    if(hotel) pts.push([hotel.lat, hotel.lng]);
-    route.spots.forEach(sid => { const s = SPOT_MAP[sid]; pts.push([s.lat, s.lng]); });
-    if(pts.length>1){
-      const line = L.polyline(pts, {color:'#1B6CA8', weight:4, opacity:.85, dashArray:null, lineJoin:'round'});
-      line.addTo(map);
-      routeLayers.push(line);
-      // 起点终点
-      const start = L.circleMarker(pts[0], {radius:6, color:'#fff', weight:2, fillColor:'#2E8F5B', fillOpacity:1});
-      const end = L.circleMarker(pts[pts.length-1], {radius:6, color:'#fff', weight:2, fillColor:'#C4553B', fillOpacity:1});
-      start.addTo(map); end.addTo(map);
-      routeLayers.push(start, end);
-      map.fitBounds(L.latLngBounds(pts), {padding:[46,46], maxZoom:14});
-    }
+/* ================= 路线 ================= */
+function buildRoutes(){
+  const tabs = $('#routeTabs');
+  tabs.innerHTML = '<button class="tab on" data-g="全部">全部路线<span class="n">'+ROUTES.length+'</span></button>' +
+    GROUP_ORDER.map(g => {
+      const n = ROUTES.filter(r => r.group === g).length;
+      return `<button class="tab" data-g="${g}">${g}<span class="n">${n}</span></button>`;
+    }).join('');
+  tabs.addEventListener('click', e => {
+    const b = e.target.closest('.tab'); if(!b) return;
+    tabs.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+    b.classList.add('on');
+    renderRoutes(b.dataset.g);
+  });
+  renderRoutes('全部');
+}
+
+function renderRoutes(group){
+  const list = group === '全部' ? ROUTES : ROUTES.filter(r => r.group === group);
+  const grid = $('#routeGrid');
+  grid.innerHTML = list.map((r, i) => {
+    const first = SPOT_BY_ID[r.stops[0]];
+    return `<div class="route-card${selectedRoute && selectedRoute.name===r.name ? ' selected':''}" data-name="${esc(r.name)}" data-idx="${i}">
+      <div class="cover" style="background-image:url('${first.img}')">
+        <span class="g">${esc(r.group)}</span><span class="dur">${esc(r.days)}</span>
+        <span class="ck">✓</span>
+      </div>
+      <div class="bd">
+        <h3>${esc(r.name)}</h3>
+        <div class="sub">${esc(r.sub)}</div>
+        <div class="ft">
+          <i>📍 ${r.stops.length} 站</i>
+          <i>🚌 ${esc(r.mode)}</i>
+          <i>⏱ ${esc(r.days)}</i>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  grid.querySelectorAll('.route-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const r = ROUTES.find(x => x.name === card.dataset.name);
+      if(r) selectRoute(r);
+    });
+  });
+}
+
+function selectRoute(r){
+  selectedRoute = r;
+  document.querySelectorAll('.route-card').forEach(c => c.classList.toggle('selected', c.dataset.name === r.name));
+  renderItinerary(r);
+  drawRoute(r);
+  if(selectedHotel){
+    const first = SPOT_BY_ID[r.stops[0]];
+    drawHotelRouteLine(selectedHotel, first);
   }
+  updateStatus();
+  $('#mapArea').scrollIntoView({behavior:'smooth', block:'start'});
+  map.flyToBounds(routeLine.getBounds().pad(.25), {padding:[46,46]});
 }
 
-function updateMapStatus(){
-  const hotel = store.hotelId ? HOTEL_MAP[store.hotelId] : null;
-  const route = store.routeId ? ROUTE_MAP[store.routeId] : null;
-  if(hotel && route){
-    $('mapStatus').innerHTML = `<b>${esc(hotel.name)}</b> → <b>${esc(route.name)}</b>`;
-  } else if(hotel){
-    $('mapStatus').innerHTML = `已选 <b>${esc(hotel.name)}</b>，请选择路线`;
-  } else if(route){
-    $('mapStatus').innerHTML = `已选路线 <b>${esc(route.name)}</b>`;
-  } else {
-    $('mapStatus').textContent = '先在上方选择酒店或路线';
-  }
-}
+function drawRoute(r){
+  const stops = r.stops.map(id => SPOT_BY_ID[id]);
+  if(routeLine) map.removeLayer(routeLine);
+  routeLine = L.polyline(stops.map(s => [s.lat,s.lng]), {color:'#1B6CA8', weight:4, opacity:.9}).addTo(map);
 
-function focusSpot(sid){
-  const s = SPOT_MAP[sid];
-  if(!s) return;
-  map.setView([s.lat, s.lng], 15);
-  spotMarkers[sid].openPopup();
-  document.querySelectorAll('.itin-item').forEach(el=>{
-    el.style.background = el.dataset.spot===sid ? 'rgba(255,217,160,.14)' : '';
-  });
-}
-
-/* ===== 事件绑定 ===== */
-function bindEvents(){
-  // 酒店搜索
-  $('hotelSearch').addEventListener('input', e => {
-    store.query = e.target.value;
-    renderHotels();
-  });
-  // 酒店筛选
-  $('hotelTabs').addEventListener('click', e => {
-    const t = e.target.closest('.tab'); if(!t) return;
-    store.filter = t.dataset.filter;
-    renderTabs(); renderHotels();
-  });
-  // 选酒店
-  $('hotelGrid').addEventListener('click', e => {
-    const c = e.target.closest('.hotel-card'); if(!c) return;
-    selectHotel(c.dataset.hotel);
-  });
-  $('hotelGrid').addEventListener('keydown', e => {
-    if(e.key==='Enter' || e.key===' '){
-      const c = e.target.closest('.hotel-card'); if(!c) return;
-      e.preventDefault(); selectHotel(c.dataset.hotel);
+  numBadges.forEach(b => map.removeLayer(b)); numBadges = [];
+  const inRoute = new Set(r.stops);
+  spotMarkers.forEach(({m, s}) => {
+    if(inRoute.has(s.id)){
+      m.setStyle({radius:8, weight:3, fillOpacity:.98});
+      m.bringToFront();
+      const badge = L.marker([s.lat, s.lng], {icon: L.divIcon({className:'route-num', html:String(r.stops.indexOf(s.id)+1), iconSize:[24,24], iconAnchor:[12,12]})}).addTo(map);
+      numBadges.push(badge);
+    } else {
+      m.setStyle({fillOpacity:.18, weight:1.5});
     }
   });
-  // 选路线
-  $('routeArea').addEventListener('click', e => {
-    const c = e.target.closest('.route-card'); if(!c) return;
-    selectRoute(c.dataset.route);
-  });
-  $('routeArea').addEventListener('keydown', e => {
-    if(e.key==='Enter' || e.key===' '){
-      const c = e.target.closest('.route-card'); if(!c) return;
-      e.preventDefault(); selectRoute(c.dataset.route);
-    }
-  });
-  // 行程条目点击 -> 地图聚焦
-  $('itinList').addEventListener('click', e => {
-    const it = e.target.closest('.itin-item'); if(!it) return;
-    focusSpot(it.dataset.spot);
+}
+
+/* ================= 行程 ================= */
+function renderItinerary(r){
+  const box = $('#itinerary');
+  const stops = r.stops.map(id => SPOT_BY_ID[id]);
+  box.innerHTML = `
+    <div class="itin-head">
+      <h3>${esc(r.name)}</h3>
+      <div class="meta">${esc(r.group)} · ${r.stops.length} 站 · ${esc(r.days)} · ${esc(r.mode)}</div>
+    </div>
+    ${stops.map((s, i) => `
+      <div class="itin-item" data-spot="${esc(s.id)}">
+        <div class="idx">${i+1}</div>
+        <img src="${s.img}" alt="${esc(s.name)}" loading="lazy">
+        <div class="tx">
+          <div class="nm">${esc(s.name)}<span class="t">${esc(s.time)}</span></div>
+          <div class="f">🎫 ${esc(s.fee)}</div>
+          <div class="d">${esc(s.desc)}</div>
+          <div class="tip">${esc(s.tip)}</div>
+        </div>
+      </div>`).join('')}`;
+  box.querySelectorAll('.itin-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const s = SPOT_BY_ID[item.dataset.spot];
+      map.flyTo([s.lat, s.lng], 14);
+      const mk = spotMarkers.find(x => x.s.id === s.id);
+      mk && mk.m.openPopup();
+    });
   });
 }
 
-function selectHotel(id){
-  store.hotelId = id;
-  renderHotels(); renderRoutes(); renderItinerary(); updateMap(); updateMapStatus();
-  const h = HOTEL_MAP[id];
-  map.flyTo([h.lat, h.lng], 14, {duration:.8});
-}
-function selectRoute(id){
-  store.routeId = id;
-  renderRoutes(); renderItinerary(); updateMap(); updateMapStatus();
+function updateStatus(){
+  const el = $('#mapStatus');
+  if(selectedHotel && selectedRoute) el.innerHTML = `已选 <b>${esc(selectedHotel.name)}</b> → 路线 <b>${esc(selectedRoute.name)}</b>，地图已从酒店连线至首站`;
+  else if(selectedHotel) el.innerHTML = `已选 <b>${esc(selectedHotel.name)}</b>，请在上方挑一条路线`;
+  else if(selectedRoute) el.innerHTML = `已选路线 <b>${esc(selectedRoute.name)}</b>，可再选酒店从住宿点连线`;
+  else el.innerHTML = `在地图上点选景点查看详情；右上角可切换 <b>高德街道 / 高德卫星 / OSM</b> 底图。`;
 }
 
-/* ===== 启动 ===== */
-renderTabs(); renderHotels(); renderRoutes(); renderItinerary();
-initMap(); updateMapStatus(); bindEvents();
+/* ================= 启动 ================= */
+initMap();
+buildHotelFilters();
+applyHotelFilter(true);
+buildRoutes();
+$('#moreBtn').addEventListener('click', () => { shownCount += 12; applyHotelFilter(false); });
 </script>
 </body>
 </html>
